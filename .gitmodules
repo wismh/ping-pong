@@ -4,3 +4,9 @@
 [submodule "external/SDL3"]
 	path = external/SDL3
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "external/spdlog"]
+	path = external/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "external/boost_di"]
+	path = external/boost_di
+	url = https://github.com/boost-experimental/di.git
