@@ -13,11 +13,18 @@ add_subdirectory(external/spdlog)
 # ---------- Our Source ----------
 add_executable(${PROJECT_NAME}
     app/main.cpp
-        app/engine/core/engine.h
-        app/engine/core/window_system.h
-        app/engine/core/utils.h
-        app/engine/core/canvas.h
-        app/engine/core/loop.h
+    app/engine/core/engine.h
+    app/engine/core/window_system.h
+    app/engine/utils.h
+    app/engine/core/loop.h
+    app/engine/render/command_buffer.h
+    app/engine/render/commands.h
+    app/engine/render/irender_backend.h
+    app/engine/render/icanvas.h
+    app/engine/render/igraphic_fabric.h
+    app/engine/render/backends/opengl/opengl_canvas.h
+    app/engine/render/backends/opengl/opengl_render.h
+    app/engine/render/backends/opengl/opengl_fabric.h
 )
 
 # ---------- Includes ----------

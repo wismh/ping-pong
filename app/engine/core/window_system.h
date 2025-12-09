@@ -1,5 +1,5 @@
 #pragma once
-#include "utils.h"
+#include "../utils.h"
 
 namespace engine {
 
@@ -9,7 +9,9 @@ class WindowSystem final {
 
     bool _initialized = false;
 public:
-    explicit WindowSystem(std::shared_ptr<spdlog::logger> logger) :
+    explicit WindowSystem(
+        const std::shared_ptr<spdlog::logger>& logger
+    ) :
         _logger(logger) {
     }
 
@@ -18,7 +20,7 @@ public:
     }
 
     bool Create(const std::string& title, const glm::ivec2& size) {
-        _logger->debug("Start creating window");
+        _logger->info("Start creating window...");
 
         _window = SDL_CreateWindow(title.c_str(), size.x, size.y, SDL_WINDOW_OPENGL);
         if (!_window) {
@@ -26,7 +28,7 @@ public:
             return false;
         }
 
-        _logger->info("Created window");
+        _logger->debug("Created window");
 
         _initialized = true;
         return true;

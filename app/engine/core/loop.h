@@ -1,19 +1,20 @@
 #pragma once
 
-#include "canvas.h"
+#include "engine/render/icanvas.h"
+#include "engine/utils.h"
 
 namespace engine {
 
 class Loop {
     std::shared_ptr<spdlog::logger> _logger;
-    std::shared_ptr<Canvas> _canvas;
+    std::shared_ptr<render::ICanvas> _canvas;
 
     bool _running = true;
     SDL_Event _event{};
 public:
     Loop(
         const std::shared_ptr<spdlog::logger>& logger,
-        const std::shared_ptr<Canvas>& canvas
+        const std::shared_ptr<render::ICanvas>& canvas
     ) :
         _logger(logger),
         _canvas(canvas) {

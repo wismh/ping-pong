@@ -3,6 +3,14 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+#include "engine/render/command_buffer.h"
+#include "engine/render/igraphic_fabric.h"
+
+#include "engine/render/backends/opengl/opengl_canvas.h"
+#include "engine/render/backends/opengl/opengl_render.h"
+#include "engine/render/backends/opengl/opengl_fabric.h"
+
+#include "window_system.h"
 #include "loop.h"
 
 namespace engine {
@@ -11,27 +19,30 @@ class Engine final {
     std::shared_ptr<spdlog::logger> _logger;
 
     std::shared_ptr<WindowSystem> _windowSystem;
-    std::shared_ptr<Canvas> _canvas;
+    std::shared_ptr<render::ICanvas> _canvas;
     std::shared_ptr<Loop> _loop;
 public:
-    Engine() {}
+    Engine() = default;
     ~Engine() {
         Dispose();
     }
 
     bool Init() {
         CreateLogger();
-        _logger->debug("Initializing engine...");
+        _logger->info("Initializing engine...");
 
         auto injector = di::make_injector(
-            di::bind<spdlog::logger>.to(_logger),
+            di::bind<spdlog::logger>().to(_logger),
             di::bind<WindowSystem>.in(di::singleton),
-            di::bind<Canvas>.in(di::singleton),
-            di::bind<Loop>.in(di::singleton)
+            di::bind<Loop>.in(di::singleton),
+            di::bind<render::IRenderBackend>.to<render::OpenGLRenderBackend>().in(di::singleton),
+            di::bind<render::IGraphicFabric>.to<render::OpenGLFabric>().in(di::singleton),
+            di::bind<render::CommandBuffer>.in(di::singleton),
+            di::bind<render::ICanvas>.to<render::OpenGLCanvas>().in(di::singleton)
         );
 
         _windowSystem = injector.create<std::shared_ptr<WindowSystem>>();
-        _canvas = injector.create<std::shared_ptr<Canvas>>();
+        _canvas = injector.create<std::shared_ptr<render::ICanvas>>();
         _loop = injector.create<std::shared_ptr<Loop>>();
 
         const auto success =

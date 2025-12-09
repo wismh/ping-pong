@@ -1,27 +1,34 @@
 #pragma once
 
-#include "window_system.h"
+#include <iostream>
 
-namespace engine {
+#include "engine/render/icanvas.h"
+#include "engine/core/window_system.h"
 
-class Canvas {
+namespace engine::render {
+
+class OpenGLCanvas final : public ICanvas {
     std::shared_ptr<spdlog::logger> _logger;
     std::shared_ptr<WindowSystem> _windowSystem;
-    SDL_GLContext _context = nullptr;
+    std::shared_ptr<CommandBuffer> _commandBuffer;
 
+    SDL_GLContext _context = nullptr;
     bool _initialized = false;
 public:
-    Canvas(
+    OpenGLCanvas(
         const std::shared_ptr<spdlog::logger>& logger,
-        const std::shared_ptr<WindowSystem>& windowSystem
+        const std::shared_ptr<WindowSystem>& windowSystem,
+        const std::shared_ptr<CommandBuffer>& commandBuffer
     ) :
         _logger(logger),
-        _windowSystem(windowSystem) {
-
+        _windowSystem(windowSystem),
+        _commandBuffer(commandBuffer)
+    {
+        std::cout << _logger.get() << std::endl;
     }
 
-    bool Init() {
-        _logger->debug("Initializing canvas...");
+    bool Init() override {
+        _logger->info("Initializing canvas...");
 
         _context = SDL_GL_CreateContext(_windowSystem->GetWindow());
         if (!_context) {
@@ -31,20 +38,23 @@ public:
 
         gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress));
 
-        _logger->info("Initialized canvas successfully");
+        _logger->info("OpenGL version info: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+        _logger->debug("Initialized canvas successfully");
 
         _initialized = true;
         return true;
     }
 
-    void Draw() const {
+    void Draw() override {
         glClearColor(0.0f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        _commandBuffer->Execute();
 
         SDL_GL_SwapWindow(_windowSystem->GetWindow());
     }
 
-    void Dispose() {
+    void Dispose() override {
         if (!_initialized)
             return;
 
