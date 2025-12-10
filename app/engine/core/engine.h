@@ -12,9 +12,12 @@
 
 #include "window_system.h"
 #include "loop.h"
+#include "../resources/assetsdb.h"
 #include "../resources/mesh_pipe.h"
 #include "../resources/shader_pipe.h"
 #include "../resources/texture_pipe.h"
+
+#include <boost/di/extension/injector.hpp>
 
 namespace engine {
 
@@ -33,17 +36,15 @@ public:
 
     bool Init() {
         auto injector = di::make_injector(
-            di::bind<MeshPipe>.in(di::singleton),
-            di::bind<TexturePipe>.in(di::singleton),
-            di::bind<ShaderPipe>.in(di::singleton),
+            di::bind<AssetsDb>.in(di::singleton),
             di::bind<Logger>.in(di::singleton),
             di::bind<IGame>.to<GameT>().in(di::singleton),
             di::bind<WindowSystem>.in(di::singleton),
             di::bind<Loop>.in(di::singleton),
             di::bind<render::IRenderBackend>.to<render::OpenGLRenderBackend>().in(di::singleton),
             di::bind<render::IGraphicFabric>.to<render::OpenGLFabric>().in(di::singleton),
-            di::bind<render::CommandBuffer>.in(di::singleton),
-            di::bind<render::ICanvas>.to<render::OpenGLCanvas>().in(di::singleton)
+            di::bind<render::ICanvas>.to<render::OpenGLCanvas>().in(di::singleton),
+            di::bind<render::CommandBuffer>.in(di::singleton)
         );
 
         _logger = injector.template create<std::shared_ptr<Logger>>()->Get();

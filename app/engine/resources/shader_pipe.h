@@ -10,7 +10,7 @@
 
 namespace engine {
 
-    class ShaderPipe final : public ResourcePipe<const std::string&, render::IShader> {
+    class ShaderPipe final : public ResourcePipe<render::IShader> {
         std::shared_ptr<spdlog::logger> _logger;
         std::shared_ptr<render::IGraphicFabric> _fabric;
     public:
@@ -23,37 +23,37 @@ namespace engine {
 
         }
 
-        std::shared_ptr<render::IShader> Load(const std::string& id, const std::string& source) override {
-            if (_resources.contains(id))
-                return _resources[id];
+        std::shared_ptr<render::IShader> Load(const std::string& path, const bool cache) override {
+            if (_cache.contains(path))
+                return _cache[path];
 
-            _logger->info("Loading shader [{}] from '{}'", id, source);
+            _logger->info("Loading shader from '{}'", path);
 
             using namespace tinyxml2;
 
             XMLDocument doc;
 
-            if (doc.LoadFile(source.c_str()) != XML_SUCCESS) {
-                _logger->error("Failed to load shader [{}]", id);
+            if (doc.LoadFile(path.c_str()) != XML_SUCCESS) {
+                _logger->error("Failed to load shader from '{}'", path);
                 return nullptr;
             }
 
             auto* root = doc.RootElement();
             if (!root) {
-                _logger->error("Shader [{}] has no XML root element", id);
+                _logger->error("Shader has no XML root element in '{}'", path);
                 return nullptr;
             }
 
             auto* v = root->FirstChildElement("vertex");
             if (!v || !v->GetText()) {
-                _logger->error("Vertex shader missing in [{}]", id);
+                _logger->error("Vertex shader missing in '{}'", path);
                 return nullptr;
             }
             const auto& vertex = v->GetText();
 
             auto* f = root->FirstChildElement("fragment");
             if (!f || !f->GetText()) {
-                _logger->error("Fragment shader missing in [{}]", id);
+                _logger->error("Fragment shader missing in '{}'", path);
                 return nullptr;
             }
             const auto& fragment = f->GetText();
@@ -70,22 +70,23 @@ namespace engine {
                 return nullptr;
             }
 
-            _logger->debug("Loaded shader [{}] successfully", id);
+            _logger->debug("Loaded shader successfully from '{}'", path);
 
-            _resources.insert({id, shader});
+            if (cache)
+                _cache.insert({path, shader});
             return shader;
         }
 
-        void Unload(const std::string &id) override {
-            if (!_resources.contains(id))
+        void Unload(const std::string &path) override {
+            if (!_cache.contains(path))
                 return;
 
-            _logger->info("Unloading shader [{}]", id);
+            _logger->info("Unloading shader '{}'", path);
 
-            auto resource = _resources.at(id);
+            auto resource = _cache.at(path);
             resource.reset();
 
-            _resources.erase(id);
+            _cache.erase(path);
         }
     };
 

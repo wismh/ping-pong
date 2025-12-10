@@ -7,7 +7,8 @@
 
 namespace engine {
 
-class MeshPipe final : public ResourcePipe<const std::string&, render::IMesh> {
+
+class MeshPipe final : public ResourcePipe<render::IMesh> {
     std::shared_ptr<spdlog::logger> _logger;
     std::shared_ptr<render::IGraphicFabric> _fabric;
 public:
@@ -20,15 +21,15 @@ public:
 
     }
 
-    std::shared_ptr<render::IMesh> Load(const std::string &id, const std::string& source) override {
-        if (_resources.contains(id))
-            return _resources[id];
+    std::shared_ptr<render::IMesh> Load(const std::string& path, const bool cache) override {
+        if (_cache.contains(path))
+            return _cache[path];
 
-        _logger->info("Loading mesh [{}] from '{}'", id, source);
+        _logger->info("Loading mesh from file '{}'", path);
 
-        std::ifstream file(source);
+        std::ifstream file(path);
         if (!file.is_open()) {
-            _logger->error("Failed to load mesh [{}] from file '{}'", id, source);
+            _logger->error("Failed to load mesh from file '{}'", path);
             return nullptr;
         }
 
@@ -45,7 +46,7 @@ public:
             float u, v;
 
             if (!(ss >> px >> py >> pz >> u >> v)) {
-                _logger->error("Failed to load mesh [{}]: Invalid mesh format in: {}", id, line);
+                _logger->error("Failed to load mesh: Invalid mesh format in: {}",line);
                 return nullptr;
             }
 
@@ -67,21 +68,23 @@ public:
             return nullptr;
        }
 
-        _logger->debug("Loaded mesh [{}] successfully", id);
+        _logger->debug("Loaded mesh successfully from file: {}", path);
 
-        _resources.insert({id, mesh});
+        if (cache)
+            _cache.insert({path, mesh});
+
         return mesh;
     }
 
-    void Unload(const std::string &id) override {
-        if (!_resources.contains(id))
+    void Unload(const std::string &source) override {
+        if (!_cache.contains(source))
             return;
 
-        _logger->info("Unloading mesh [{}]", id);
+        _logger->info("Unloading mesh [{}]", source);
 
-        auto resource = _resources.at(id);
+        auto resource = _cache.at(source);
 
-        _resources.erase(id);
+        _cache.erase(source);
     }
 };
 

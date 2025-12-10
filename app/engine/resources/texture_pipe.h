@@ -10,7 +10,7 @@
 
 namespace engine {
 
-    class TexturePipe final : public ResourcePipe<const std::string&, render::ITexture> {
+    class TexturePipe final : public ResourcePipe<render::ITexture> {
         std::shared_ptr<spdlog::logger> _logger;
         std::shared_ptr<render::IGraphicFabric> _fabric;
     public:
@@ -23,17 +23,17 @@ namespace engine {
 
         }
 
-        std::shared_ptr<render::ITexture> Load(const std::string& id, const std::string& source) override {
-            if (_resources.contains(id))
-                return _resources[id];
+        std::shared_ptr<render::ITexture> Load(const std::string& path, const bool cache) override {
+            if (_cache.contains(path))
+                return _cache[path];
 
-            _logger->info("Loading texture [{}] from '{}'", id, source);
+            _logger->info("Loading texture from '{}'", path);
 
             int w, h, channels;
             stbi_set_flip_vertically_on_load(true);
-            unsigned char* data = stbi_load(source.c_str(), &w, &h, &channels, 4);
+            unsigned char* data = stbi_load(path.c_str(), &w, &h, &channels, 4);
             if (!data) {
-                _logger->error("Failed to load texture from {}", source);
+                _logger->error("Failed to load texture from {}", path);
                 return nullptr;
             }
 
@@ -53,22 +53,23 @@ namespace engine {
 
             stbi_image_free(data);
 
-            _logger->debug("Loaded texture [{}] successfully", id);
+            _logger->debug("Loaded texture successfully from '{}'", path);
 
-            _resources.insert({id, texture});
+            if (cache)
+                _cache.insert({path, texture});
             return texture;
         }
 
-        void Unload(const std::string &id) override {
-            if (!_resources.contains(id))
+        void Unload(const std::string& path) override {
+            if (!_cache.contains(path))
                 return;
 
-            _logger->info("Unloading texture [{}]", id);
+            _logger->info("Unloading texture from '{}'", path);
 
-            auto resource = _resources.at(id);
+            auto resource = _cache.at(path);
             resource.reset();
 
-            _resources.erase(id);
+            _cache.erase(path);
         }
     };
 

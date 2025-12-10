@@ -14,9 +14,6 @@ namespace di = boost::di;
 
 namespace engine {
 
-inline std::string GetResourcePath(const char* localPath) {
-    return std::string(ASSETS_PATH) + "/" + localPath;
-}
 class Logger final {
     std::shared_ptr<spdlog::logger> _logger;
 public:

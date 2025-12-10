@@ -49,10 +49,17 @@ add_executable(${PROJECT_NAME}
     app/engine/render/itexture.h
     app/engine/render/backends/opengl/opengl_texture.h
     app/engine/resources/texture_desc.h
-    app/engine/resources/data_desc.h
-    app/engine/resources/data_pipe.h
-    app/engine/resources/texture_pipe.h
+        app/engine/resources/texture_pipe.h
     app/engine/resources/shader_pipe.h
+    app/engine/nodes/node.h
+    app/engine/ecs/ecs.h
+    app/engine/nodes/node_ecs.h
+    app/game/game.h
+    app/game/utils.h
+    app/game/render_system.h
+    app/game/renderable.h
+    app/game/transform.h
+    app/engine/resources/assetsdb.h
 )
 # ---------- Definitions ----------
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -62,6 +69,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 # ---------- Includes ----------
 target_include_directories(${PROJECT_NAME} PRIVATE
     external/boost_di/include
+    external/boost_di/extension/include
     external/nanovg/src
 )
 

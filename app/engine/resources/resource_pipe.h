@@ -3,18 +3,21 @@
 
 namespace engine {
 
-template <typename SrcT, typename DestT>
-class ResourcePipe {
-protected:
-    std::unordered_map<std::string, std::shared_ptr<DestT>> _resources;
+class IResourcePipe {
 public:
-    virtual ~ResourcePipe() = default;
+    virtual ~IResourcePipe() = default;
+};
 
-    virtual std::shared_ptr<DestT> Load(const std::string& id, SrcT source) = 0;
-    virtual void Unload(const std::string& id) = 0;
+template <typename DestT>
+class ResourcePipe : public IResourcePipe {
+protected:
+    std::unordered_map<std::string, std::shared_ptr<DestT>> _cache;
+public:
+    virtual std::shared_ptr<DestT> Load(const std::string& path, bool cache) = 0;
+    virtual void Unload(const std::string& path) = 0;
 
     void UnloadAll() {
-        for (auto resource = _resources.begin(); resource != _resources.end(); ++resource)
+        for (auto resource = _cache.begin(); resource != _cache.end(); ++resource)
             Unload(resource->first);
     }
 };
