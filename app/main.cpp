@@ -14,23 +14,14 @@ class Game final : public e::IGame {
     std::shared_ptr<er::CommandBuffer> _commandBuffer;
     std::shared_ptr<er::IGraphicFabric> _graphicsFabric;
     std::shared_ptr<e::TexturePipe> _texturePipe;
+    std::shared_ptr<e::ShaderPipe> _shaderPipe;
+    std::shared_ptr<e::MeshPipe> _meshPipe;
     std::shared_ptr<spdlog::logger> _logger;
 
     std::shared_ptr<er::IMesh> _mesh;
     std::shared_ptr<er::IShader> _shader;
     std::shared_ptr<er::ITexture> _texture;
     std::shared_ptr<er::Camera> _camera;
-
-    std::vector<e::Vertex> triangleVertices{
-        {{-0.5f,  0.5f, 0.0f}, {0.0f, 1.0f}},
-        {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},
-        {{ 0.5f,  0.5f, 0.0f}, {1.0f, 1.0f}},
-
-        {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},
-        {{ 0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}},
-        {{ 0.5f,  0.5f, 0.0f}, {1.0f, 1.0f}},
-    };
-
 
     NVGcontext* vg;
     int font;
@@ -39,64 +30,22 @@ public:
         const std::shared_ptr<e::Logger>& logger,
         const std::shared_ptr<er::CommandBuffer>& commandBuffer,
         const std::shared_ptr<er::IGraphicFabric>& graphicsFabric,
-        const std::shared_ptr<e::TexturePipe>& texturePipe
+        const std::shared_ptr<e::TexturePipe>& texturePipe,
+        const std::shared_ptr<e::ShaderPipe>& shaderPipe,
+        const std::shared_ptr<e::MeshPipe>& meshPipe
     ) :
         _commandBuffer(commandBuffer),
         _graphicsFabric(graphicsFabric),
         _logger(logger->Get()),
-        _texturePipe(texturePipe) {
+        _texturePipe(texturePipe),
+        _shaderPipe(shaderPipe),
+        _meshPipe(meshPipe) {
 
     }
 
     void OnStart() override {
-        const char* vertexSrc = R"(
-#version 330 core
-
-layout(location = 0) in vec3 aPosition;
-layout(location = 1) in vec2 aUV;
-
-out vec2 vUV;
-
-uniform mat4 uModel;
-uniform mat4 uView;
-uniform mat4 uProjection;
-
-void main() {
-    vUV = aUV;
-    gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
-}
-)";
-
-        const char* fragmentSrc = R"(
-#version 330 core
-
-out vec4 FragColor;
-
-in vec2 vUV;
-uniform sampler2D uTexture;
-
-void main() {
-    FragColor = texture(uTexture, vUV);
-}
-)";
-
-        std::string errorMessage;
-
-        if (!_graphicsFabric->TryCreateShader({
-            .vertexShaderSrc = vertexSrc,
-            .fragmentShaderSrc = fragmentSrc,
-        }, _shader, errorMessage)) {
-            _logger->error(errorMessage);
-            return;
-        }
-
-        if (!_graphicsFabric->TryCreateMesh({
-            triangleVertices, {}
-        }, _mesh, errorMessage)) {
-            _logger->error(errorMessage);
-            return;
-        }
-
+        _mesh = _meshPipe->Load("test", e::GetResourcePath("quad.mesh"));
+        _shader = _shaderPipe->Load("test", e::GetResourcePath("default-shader.shader"));
         _texture = _texturePipe->Load("test", e::GetResourcePath("test.png"));
 
         _camera = er::Camera::CreateCamera();

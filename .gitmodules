@@ -13,3 +13,6 @@
 [submodule "external/nanovg"]
 	path = external/nanovg
 	url = https://github.com/memononen/nanovg
+[submodule "external/tinyxml2"]
+	path = external/tinyxml2
+	url = https://github.com/leethomason/tinyxml2

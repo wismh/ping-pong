@@ -13,6 +13,7 @@
 #include "window_system.h"
 #include "loop.h"
 #include "../resources/mesh_pipe.h"
+#include "../resources/shader_pipe.h"
 #include "../resources/texture_pipe.h"
 
 namespace engine {
@@ -34,6 +35,7 @@ public:
         auto injector = di::make_injector(
             di::bind<MeshPipe>.in(di::singleton),
             di::bind<TexturePipe>.in(di::singleton),
+            di::bind<ShaderPipe>.in(di::singleton),
             di::bind<Logger>.in(di::singleton),
             di::bind<IGame>.to<GameT>().in(di::singleton),
             di::bind<WindowSystem>.in(di::singleton),

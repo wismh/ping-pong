@@ -9,6 +9,7 @@ add_subdirectory(external/SDL3)
 add_subdirectory(external/glm)
 add_subdirectory(external/glad)
 add_subdirectory(external/spdlog)
+add_subdirectory(external/tinyxml2)
 
 add_library(nanovg
     external/nanovg/src/nanovg.c
@@ -35,7 +36,7 @@ add_executable(${PROJECT_NAME}
     app/engine/resources/resource_pipe.h
     app/engine/core/igame.h
     app/engine/resources/mesh_desc.h
-        app/engine/resources/mesh_pipe.h
+    app/engine/resources/mesh_pipe.h
     app/engine/render/igpu_mesh.h
     app/engine/render/ishader.h
     app/engine/render/backends/opengl/opengl_mesh.h
@@ -45,16 +46,17 @@ add_executable(${PROJECT_NAME}
     app/engine/render/backends/opengl/opengl_fabric.h
     app/engine/render/camera.h
     app/engine/render/camera.cpp
-        app/engine/render/itexture.h
-        app/engine/render/backends/opengl/opengl_texture.h
-        app/engine/resources/texture_desc.h
-        app/engine/resources/data_desc.h
-        app/engine/resources/data_pipe.h
-        app/engine/resources/texture_pipe.h
+    app/engine/render/itexture.h
+    app/engine/render/backends/opengl/opengl_texture.h
+    app/engine/resources/texture_desc.h
+    app/engine/resources/data_desc.h
+    app/engine/resources/data_pipe.h
+    app/engine/resources/texture_pipe.h
+    app/engine/resources/shader_pipe.h
 )
 # ---------- Definitions ----------
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-    ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/"
+    ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets"
 )
 
 # ---------- Includes ----------
@@ -70,4 +72,5 @@ target_link_libraries(${PROJECT_NAME}
     glm
     spdlog::spdlog_header_only
     nanovg
+    tinyxml2
 )
