@@ -1,4 +1,5 @@
 #include "engine/core/engine.h"
+#include "engine/render/camera.h"
 
 namespace game {
 
@@ -12,6 +13,7 @@ class Game final : public e::IGame {
 
     std::shared_ptr<er::IMesh> _mesh;
     std::shared_ptr<er::IShader> _shader;
+    std::shared_ptr<er::Camera> _camera;
 
     std::vector<float> triangleVertices{
         -0.5f,  0.5f, 0.0f,
@@ -37,9 +39,15 @@ public:
     void OnStart() override {
         const char* vertexSrc = R"(
 #version 330 core
-layout(location = 0) in vec3 aPos;
+
+layout(location = 0) in vec3 aPosition;
+
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProjection;
+
 void main() {
-    gl_Position = vec4(aPos, 1.0);
+    gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
 }
 )";
 
@@ -67,17 +75,37 @@ void main() {
             _logger->error(errorMessage);
             return;
         }
+
+        _camera = er::Camera::CreateCamera();
+        _camera->orthographic = true;
+        _camera->nearClip = -1.f;
+        _camera->aspect = 800.f / 600.f;
     }
 
-    void OnUpdate() override {
+    void OnUpdate(const float deltaTime) override {
 
     }
 
-    void OnDraw() override {
-        _commandBuffer->Push(er::CmdUseShader{_shader});
+    void OnDraw(const float deltaTime) override {
+        static glm::mat4 model = glm::mat4(1.0f);
+        static glm::mat4 model2 = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f));
+
         _commandBuffer->Push(er::CmdDrawMesh{
-            _mesh, glm::mat4(1.0f),
+            _shader,
+            _mesh,
+            model,
+            _camera->GetView(),
+            _camera->GetProjection()
         });
+        _commandBuffer->Push(er::CmdDrawMesh{
+            _shader,
+            _mesh,
+            model2,
+            _camera->GetView(),
+            _camera->GetProjection()
+        });
+
+        model = glm::rotate(model, glm::radians(45.f * deltaTime), glm::vec3(0.f, 0.0f, 1.0f));
     }
 
     void OnQuit() override {

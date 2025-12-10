@@ -18,7 +18,6 @@ class Logger final {
     std::shared_ptr<spdlog::logger> _logger;
 public:
     Logger() {
-        std::cout << "Create logger!\n";
         auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("game.log", true);
 

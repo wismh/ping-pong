@@ -35,6 +35,8 @@ add_executable(${PROJECT_NAME}
         app/engine/render/backends/opengl/opengl_shader.h
         app/engine/resources/resource_create_exception.h
         app/engine/render/backends/opengl/opengl_fabric.h
+        app/engine/render/camera.h
+        app/engine/render/camera.cpp
 )
 
 # ---------- Includes ----------

@@ -7,6 +7,8 @@
 namespace engine {
 
 class Loop {
+    using clock = std::chrono::high_resolution_clock;
+
     std::shared_ptr<spdlog::logger> _logger;
     std::shared_ptr<render::ICanvas> _canvas;
     std::shared_ptr<IGame> _game;
@@ -29,11 +31,19 @@ public:
 
         _game->OnStart();
 
+        auto lastTime = clock::now();
+
         while (_running) {
+            auto now = clock::now();
+            std::chrono::duration<float> dt = now - lastTime;
+            lastTime = now;
+
+            const float deltaTime = dt.count();
+
             PollEvent();
 
-            _game->OnUpdate();
-            _game->OnDraw();
+            _game->OnUpdate(deltaTime);
+            _game->OnDraw(deltaTime);
 
             _canvas->Draw();
         }

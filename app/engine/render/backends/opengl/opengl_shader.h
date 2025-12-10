@@ -4,6 +4,7 @@
 #include "../../ishader.h"
 #include "../../../resources/resource_create_exception.h"
 #include "../../../resources/shader_desc.h"
+#include "glm/gtc/type_ptr.hpp"
 
 namespace engine::render {
 
@@ -57,6 +58,15 @@ public:
 
     void Use() override {
         glUseProgram(_program);
+    }
+
+    void SetMat4(const std::string &name, const glm::mat4 &value) override {
+        glUniformMatrix4fv(
+            glGetUniformLocation(_program, name.c_str()),
+            1,
+            GL_FALSE,
+            glm::value_ptr(value)
+        );
     }
 };
 
