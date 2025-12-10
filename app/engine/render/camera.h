@@ -47,7 +47,7 @@ private:
     glm::mat4 view{};
     glm::mat4 projection{};
 
-    bool HasChanged(const Camera& cam) const;
+    bool HasChanged(const Camera& camera) const;
     void Recalc(const Camera& camera);
 };
 }

@@ -29,8 +29,8 @@ const glm::mat4& CameraCache::GetProjection(const Camera& camera) {
     return projection;
 }
 
-bool CameraCache::HasChanged(const Camera& cam) const {
-    return memcmp(&cam, &prevState, sizeof(Camera)) != 0;
+bool CameraCache::HasChanged(const Camera& camera) const {
+    return memcmp(&camera, &prevState, sizeof(Camera)) != 0;
 }
 
 void CameraCache::Recalc(const Camera& camera) {

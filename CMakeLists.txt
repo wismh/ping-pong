@@ -10,6 +10,14 @@ add_subdirectory(external/glm)
 add_subdirectory(external/glad)
 add_subdirectory(external/spdlog)
 
+add_library(nanovg
+    external/nanovg/src/nanovg.c
+)
+
+target_include_directories(nanovg PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
 # ---------- Our Source ----------
 add_executable(${PROJECT_NAME}
     app/main.cpp
@@ -21,27 +29,32 @@ add_executable(${PROJECT_NAME}
     app/engine/render/commands.h
     app/engine/render/irender_backend.h
     app/engine/render/icanvas.h
-        app/engine/render/igraphic_fabric.h
+    app/engine/render/igraphic_fabric.h
     app/engine/render/backends/opengl/opengl_canvas.h
     app/engine/render/backends/opengl/opengl_render.h
-        app/engine/resources/resource_pipe.h
-        app/engine/core/igame.h
-        app/engine/resources/mesh_desc.h
-        app/engine/resources/mesh.h
-        app/engine/render/igpu_mesh.h
-        app/engine/render/ishader.h
-        app/engine/render/backends/opengl/opengl_mesh.h
-        app/engine/resources/shader_desc.h
-        app/engine/render/backends/opengl/opengl_shader.h
-        app/engine/resources/resource_create_exception.h
-        app/engine/render/backends/opengl/opengl_fabric.h
-        app/engine/render/camera.h
-        app/engine/render/camera.cpp
+    app/engine/resources/resource_pipe.h
+    app/engine/core/igame.h
+    app/engine/resources/mesh_desc.h
+    app/engine/resources/mesh.h
+    app/engine/render/igpu_mesh.h
+    app/engine/render/ishader.h
+    app/engine/render/backends/opengl/opengl_mesh.h
+    app/engine/resources/shader_desc.h
+    app/engine/render/backends/opengl/opengl_shader.h
+    app/engine/resources/resource_create_exception.h
+    app/engine/render/backends/opengl/opengl_fabric.h
+    app/engine/render/camera.h
+    app/engine/render/camera.cpp
+)
+# ---------- Definitions ----------
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/"
 )
 
 # ---------- Includes ----------
 target_include_directories(${PROJECT_NAME} PRIVATE
     external/boost_di/include
+    external/nanovg/src
 )
 
 # ---------- Link everything ----------
@@ -50,4 +63,5 @@ target_link_libraries(${PROJECT_NAME}
     glad
     glm
     spdlog::spdlog_header_only
+    nanovg
 )

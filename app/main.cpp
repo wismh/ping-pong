@@ -1,6 +1,10 @@
 #include "engine/core/engine.h"
 #include "engine/render/camera.h"
 
+#define NANOVG_GL3_IMPLEMENTATION
+#include "nanovg.h"
+#include "nanovg_gl.h"
+
 namespace game {
 
 namespace e = engine;
@@ -24,6 +28,9 @@ class Game final : public e::IGame {
          0.5f, -0.5f, 0.0f,
          0.5f,  0.5f, 0.0f
     };
+
+    NVGcontext* vg;
+    int font;
 public:
     Game(
         const std::shared_ptr<e::Logger>& logger,
@@ -80,6 +87,19 @@ void main() {
         _camera->orthographic = true;
         _camera->nearClip = -1.f;
         _camera->aspect = 800.f / 600.f;
+
+        vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+        if (!vg) {
+            _logger->error("Failed to init NanoVG");
+            return;
+        }
+
+        auto path = e::GetResourcePath("Roboto_Condensed-Regular.ttf");
+        font = nvgCreateFont(vg, "font", path.c_str());
+        if (font < 0) {
+             _logger->error("Failed to load font by path: {}", path);
+            return;
+        }
     }
 
     void OnUpdate(const float deltaTime) override {
@@ -106,10 +126,26 @@ void main() {
         });
 
         model = glm::rotate(model, glm::radians(45.f * deltaTime), glm::vec3(0.f, 0.0f, 1.0f));
+
+        _commandBuffer->Push(er::CmdCustomDraw{
+            [this]() {
+                const float w = 800;
+                const float h = 600;
+
+                nvgBeginFrame(vg, w, h, w/h);
+
+                nvgFontSize(vg, 32.0f);
+                nvgFontFace(vg, "font");
+                nvgFillColor(vg, nvgRGBA(255, 255, 255, 255));
+                nvgText(vg, w/2 - 120, 100, "Hello NanoVG!", nullptr);
+
+                nvgEndFrame(vg);
+            }
+        });
     }
 
     void OnQuit() override {
-
+        nvgDeleteGL3(vg);
     }
 };
 

@@ -15,8 +15,13 @@ struct CmdDrawMesh {
     glm::mat4 projection;
 };
 
+struct CmdCustomDraw {
+    std::function<void()> draw;
+};
+
 using Command = std::variant<
-    CmdDrawMesh
+    CmdDrawMesh,
+    CmdCustomDraw
 >;
 
 }

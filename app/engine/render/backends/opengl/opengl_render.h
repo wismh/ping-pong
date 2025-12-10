@@ -17,6 +17,10 @@ public:
     }
 
 private:
+    static void ExecuteCommand(const CmdCustomDraw& c) {
+        c.draw();
+    }
+
     static void ExecuteCommand(const CmdDrawMesh& c) {
         const auto& shader =
             std::dynamic_pointer_cast<OpenGLShader>(c.shader);
