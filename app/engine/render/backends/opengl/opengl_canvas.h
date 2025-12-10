@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "../../commands.h"
 #include "engine/render/icanvas.h"
 #include "engine/core/window_system.h"
 
@@ -14,17 +15,16 @@ class OpenGLCanvas final : public ICanvas {
 
     SDL_GLContext _context = nullptr;
     bool _initialized = false;
+
 public:
     OpenGLCanvas(
-        const std::shared_ptr<spdlog::logger>& logger,
+        const std::shared_ptr<Logger>& logger,
         const std::shared_ptr<WindowSystem>& windowSystem,
         const std::shared_ptr<CommandBuffer>& commandBuffer
     ) :
-        _logger(logger),
+        _logger(logger->Get()),
         _windowSystem(windowSystem),
-        _commandBuffer(commandBuffer)
-    {
-        std::cout << _logger.get() << std::endl;
+        _commandBuffer(commandBuffer) {
     }
 
     bool Init() override {

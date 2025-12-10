@@ -6,7 +6,7 @@ namespace engine::render {
 
 class CommandBuffer final {
     std::vector<Command> commands{};
-    std::shared_ptr<IRenderBackend> _renderer=nullptr;
+    std::shared_ptr<IRenderBackend> _renderer;
 public:
     explicit CommandBuffer(const std::shared_ptr<IRenderBackend>& renderer) :
         _renderer(renderer) {

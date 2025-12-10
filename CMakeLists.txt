@@ -21,10 +21,20 @@ add_executable(${PROJECT_NAME}
     app/engine/render/commands.h
     app/engine/render/irender_backend.h
     app/engine/render/icanvas.h
-    app/engine/render/igraphic_fabric.h
+        app/engine/render/igraphic_fabric.h
     app/engine/render/backends/opengl/opengl_canvas.h
     app/engine/render/backends/opengl/opengl_render.h
-    app/engine/render/backends/opengl/opengl_fabric.h
+        app/engine/resources/resource_pipe.h
+        app/engine/core/igame.h
+        app/engine/resources/mesh_desc.h
+        app/engine/resources/mesh.h
+        app/engine/render/igpu_mesh.h
+        app/engine/render/ishader.h
+        app/engine/render/backends/opengl/opengl_mesh.h
+        app/engine/resources/shader_desc.h
+        app/engine/render/backends/opengl/opengl_shader.h
+        app/engine/resources/resource_create_exception.h
+        app/engine/render/backends/opengl/opengl_fabric.h
 )
 
 # ---------- Includes ----------

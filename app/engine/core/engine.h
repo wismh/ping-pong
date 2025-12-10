@@ -12,9 +12,12 @@
 
 #include "window_system.h"
 #include "loop.h"
+#include "../resources/mesh.h"
 
 namespace engine {
 
+template <typename GameT>
+    requires std::derived_from<GameT, IGame>
 class Engine final {
     std::shared_ptr<spdlog::logger> _logger;
 
@@ -22,17 +25,15 @@ class Engine final {
     std::shared_ptr<render::ICanvas> _canvas;
     std::shared_ptr<Loop> _loop;
 public:
-    Engine() = default;
     ~Engine() {
         Dispose();
     }
 
     bool Init() {
-        CreateLogger();
-        _logger->info("Initializing engine...");
-
         auto injector = di::make_injector(
-            di::bind<spdlog::logger>().to(_logger),
+            di::bind<MeshPipe>.in(di::singleton),
+            di::bind<Logger>.in(di::singleton),
+            di::bind<IGame>.to<GameT>().in(di::singleton),
             di::bind<WindowSystem>.in(di::singleton),
             di::bind<Loop>.in(di::singleton),
             di::bind<render::IRenderBackend>.to<render::OpenGLRenderBackend>().in(di::singleton),
@@ -41,9 +42,12 @@ public:
             di::bind<render::ICanvas>.to<render::OpenGLCanvas>().in(di::singleton)
         );
 
-        _windowSystem = injector.create<std::shared_ptr<WindowSystem>>();
-        _canvas = injector.create<std::shared_ptr<render::ICanvas>>();
-        _loop = injector.create<std::shared_ptr<Loop>>();
+        _logger = injector.template create<std::shared_ptr<Logger>>()->Get();
+        _logger->info("Initializing engine...");
+
+        _windowSystem = injector.template create<std::shared_ptr<WindowSystem>>();
+        _canvas = injector.template create<std::shared_ptr<render::ICanvas>>();
+        _loop = injector.template create<std::shared_ptr<Loop>>();
 
         const auto success =
             InitilizeSDL3() &&
@@ -83,19 +87,6 @@ private:
         }
         _logger->info("Initialized sdl3 successfully");
         return true;
-    }
-
-    void CreateLogger() {
-        auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("game.log", true);
-
-        _logger = std::make_shared<spdlog::logger>(
-            "engine",
-            spdlog::sinks_init_list{console_sink, file_sink}
-        );
-
-        _logger->set_level(spdlog::level::trace);
-        _logger->flush_on(spdlog::level::info);
     }
 };
 

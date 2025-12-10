@@ -1,35 +1,24 @@
 #pragma once
 #include "../utils.h"
+#include "igpu_mesh.h"
+#include "ishader.h"
 
 namespace engine::render {
 
-using PipelineHandle = uint32_t;
-using BufferHandle   = uint32_t;
 using TextureHandle  = uint32_t;
 
-struct CmdSetPipeline {
-    PipelineHandle pipeline;
+struct CmdDrawMesh {
+    std::shared_ptr<IMesh> mesh;
+    glm::mat4x4 model;
 };
 
-struct CmdBindVertexBuffer {
-    BufferHandle buffer;
-};
-
-struct CmdBindTexture {
-    TextureHandle texture;
-    uint32_t slot;
-};
-
-struct CmdDraw {
-    uint32_t vertexCount;
-    uint32_t firstVertex;
+struct CmdUseShader {
+    std::shared_ptr<IShader> shader;
 };
 
 using Command = std::variant<
-    CmdSetPipeline,
-    CmdBindVertexBuffer,
-    CmdBindTexture,
-    CmdDraw
+    CmdDrawMesh,
+    CmdUseShader
 >;
 
 }

@@ -15,21 +15,12 @@ public:
     }
 
 private:
-    static void ExecuteCommand(const CmdSetPipeline& c) {
-        glUseProgram(c.pipeline);
+    static void ExecuteCommand(const CmdUseShader& c) {
+        c.shader->Use();
     }
 
-    static void ExecuteCommand(const CmdBindVertexBuffer& c) {
-        glBindBuffer(GL_ARRAY_BUFFER, c.buffer);
-    }
-
-    static void ExecuteCommand(const CmdBindTexture& c) {
-        glActiveTexture(GL_TEXTURE0 + c.slot);
-        glBindTexture(GL_TEXTURE_2D, c.texture);
-    }
-
-    static void ExecuteCommand(const CmdDraw& c) {
-        glDrawArrays(GL_TRIANGLES, c.firstVertex, c.vertexCount);
+    static void ExecuteCommand(const CmdDrawMesh& c) {
+        c.mesh->Draw();
     }
 };
 

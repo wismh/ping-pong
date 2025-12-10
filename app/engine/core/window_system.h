@@ -10,9 +10,9 @@ class WindowSystem final {
     bool _initialized = false;
 public:
     explicit WindowSystem(
-        const std::shared_ptr<spdlog::logger>& logger
+        const std::shared_ptr<Logger>& logger
     ) :
-        _logger(logger) {
+        _logger(logger->Get()) {
     }
 
     ~WindowSystem() {

@@ -1,25 +1,17 @@
 #pragma once
 
 #include "commands.h"
+#include "../resources/mesh_desc.h"
+#include "../resources/shader_desc.h"
 
 namespace engine::render {
-
-struct VertexBufferDesc {
-    size_t size;
-    const void* data;
-};
-
-struct PipelineDesc {
-    const char* vertexShaderSrc;
-    const char* fragmentShaderSrc;
-};
 
 class IGraphicFabric {
 public:
     virtual ~IGraphicFabric() = default;
 
-    virtual BufferHandle CreateVertexBuffer(const VertexBufferDesc& desc) = 0;
-    virtual PipelineHandle CreatePipeline(const PipelineDesc& desc) = 0;
+    virtual bool TryCreateMesh(const MeshDesc& desc, std::shared_ptr<IMesh>& mesh, std::string& error) = 0;
+    virtual bool TryCreateShader(const ShaderDesc& desc, std::shared_ptr<IShader>& shader, std::string& error) = 0;
 };
 
 }
