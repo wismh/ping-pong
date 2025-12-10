@@ -30,6 +30,7 @@ private:
         shader->SetMat4("uView", c.view);
         shader->SetMat4("uModel", c.model);
 
+        c.texture->Bind();
         c.mesh->Draw();
     }
 };

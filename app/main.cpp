@@ -13,21 +13,24 @@ namespace er = engine::render;
 class Game final : public e::IGame {
     std::shared_ptr<er::CommandBuffer> _commandBuffer;
     std::shared_ptr<er::IGraphicFabric> _graphicsFabric;
+    std::shared_ptr<e::TexturePipe> _texturePipe;
     std::shared_ptr<spdlog::logger> _logger;
 
     std::shared_ptr<er::IMesh> _mesh;
     std::shared_ptr<er::IShader> _shader;
+    std::shared_ptr<er::ITexture> _texture;
     std::shared_ptr<er::Camera> _camera;
 
-    std::vector<float> triangleVertices{
-        -0.5f,  0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-         0.5f,  0.5f, 0.0f,
+    std::vector<e::Vertex> triangleVertices{
+        {{-0.5f,  0.5f, 0.0f}, {0.0f, 1.0f}},
+        {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},
+        {{ 0.5f,  0.5f, 0.0f}, {1.0f, 1.0f}},
 
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.5f,  0.5f, 0.0f
+        {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},
+        {{ 0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}},
+        {{ 0.5f,  0.5f, 0.0f}, {1.0f, 1.0f}},
     };
+
 
     NVGcontext* vg;
     int font;
@@ -35,11 +38,13 @@ public:
     Game(
         const std::shared_ptr<e::Logger>& logger,
         const std::shared_ptr<er::CommandBuffer>& commandBuffer,
-        const std::shared_ptr<er::IGraphicFabric>& graphicsFabric
+        const std::shared_ptr<er::IGraphicFabric>& graphicsFabric,
+        const std::shared_ptr<e::TexturePipe>& texturePipe
     ) :
         _commandBuffer(commandBuffer),
         _graphicsFabric(graphicsFabric),
-        _logger(logger->Get()) {
+        _logger(logger->Get()),
+        _texturePipe(texturePipe) {
 
     }
 
@@ -48,21 +53,30 @@ public:
 #version 330 core
 
 layout(location = 0) in vec3 aPosition;
+layout(location = 1) in vec2 aUV;
+
+out vec2 vUV;
 
 uniform mat4 uModel;
 uniform mat4 uView;
 uniform mat4 uProjection;
 
 void main() {
+    vUV = aUV;
     gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
 }
 )";
 
         const char* fragmentSrc = R"(
 #version 330 core
+
 out vec4 FragColor;
+
+in vec2 vUV;
+uniform sampler2D uTexture;
+
 void main() {
-    FragColor = vec4(1.0, 0.5, 0.2, 1.0);
+    FragColor = texture(uTexture, vUV);
 }
 )";
 
@@ -82,6 +96,8 @@ void main() {
             _logger->error(errorMessage);
             return;
         }
+
+        _texture = _texturePipe->Load("test", e::GetResourcePath("test.png"));
 
         _camera = er::Camera::CreateCamera();
         _camera->orthographic = true;
@@ -107,10 +123,11 @@ void main() {
     }
 
     void OnDraw(const float deltaTime) override {
-        static glm::mat4 model = glm::mat4(1.0f);
-        static glm::mat4 model2 = glm::translate(model, glm::vec3(5.0f, 0.0f, 0.0f));
+        static glm::mat4 model = glm::scale(glm::mat4(1.0f), glm::vec3(3, 3, 1));
+        static glm::mat4 model2 = glm::translate(model, glm::vec3(1.5f, 0.0f, 0.0f));
 
         _commandBuffer->Push(er::CmdDrawMesh{
+            _texture,
             _shader,
             _mesh,
             model,
@@ -118,6 +135,7 @@ void main() {
             _camera->GetProjection()
         });
         _commandBuffer->Push(er::CmdDrawMesh{
+            _texture,
             _shader,
             _mesh,
             model2,

@@ -35,7 +35,7 @@ add_executable(${PROJECT_NAME}
     app/engine/resources/resource_pipe.h
     app/engine/core/igame.h
     app/engine/resources/mesh_desc.h
-    app/engine/resources/mesh.h
+        app/engine/resources/mesh_pipe.h
     app/engine/render/igpu_mesh.h
     app/engine/render/ishader.h
     app/engine/render/backends/opengl/opengl_mesh.h
@@ -45,6 +45,12 @@ add_executable(${PROJECT_NAME}
     app/engine/render/backends/opengl/opengl_fabric.h
     app/engine/render/camera.h
     app/engine/render/camera.cpp
+        app/engine/render/itexture.h
+        app/engine/render/backends/opengl/opengl_texture.h
+        app/engine/resources/texture_desc.h
+        app/engine/resources/data_desc.h
+        app/engine/resources/data_pipe.h
+        app/engine/resources/texture_pipe.h
 )
 # ---------- Definitions ----------
 target_compile_definitions(${PROJECT_NAME} PRIVATE

@@ -24,7 +24,7 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, _vbo);
         glBufferData(
             GL_ARRAY_BUFFER,
-            static_cast<long long>(_verticesCount * sizeof(float)),
+            static_cast<long long>(_verticesCount * sizeof(Vertex)),
             desc.vertices.data(),
             GL_STATIC_DRAW
         );
@@ -35,8 +35,18 @@ public:
             3,
             GL_FLOAT,
             GL_FALSE,
-            3 * sizeof(float),
+            sizeof(Vertex),
             static_cast<void *>(nullptr)
+        );
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(
+            1,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            sizeof(Vertex),
+            reinterpret_cast<void *>(offsetof(Vertex, uv))
         );
 
         glBindVertexArray(0);

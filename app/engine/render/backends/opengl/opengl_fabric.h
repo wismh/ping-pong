@@ -1,6 +1,7 @@
 #pragma once
 #include "opengl_mesh.h"
 #include "opengl_shader.h"
+#include "opengl_texture.h"
 #include "../../igraphic_fabric.h"
 
 namespace engine::render {
@@ -28,6 +29,16 @@ public:
     ) override {
         try {
             shader = std::make_shared<OpenGLShader>(desc);
+            return true;
+        } catch (std::exception& ex) {
+            error = ex.what();
+            return false;
+        }
+    }
+
+    bool TryCreateTexture(const TextureDesc &desc, std::shared_ptr<ITexture> &texture, std::string &error) override {
+        try {
+            texture = std::make_shared<OpenGLTexture>(desc);
             return true;
         } catch (std::exception& ex) {
             error = ex.what();

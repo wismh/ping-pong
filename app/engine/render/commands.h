@@ -2,12 +2,12 @@
 #include "../utils.h"
 #include "igpu_mesh.h"
 #include "ishader.h"
+#include "itexture.h"
 
 namespace engine::render {
 
-using TextureHandle  = uint32_t;
-
 struct CmdDrawMesh {
+    std::shared_ptr<ITexture> texture;
     std::shared_ptr<IShader> shader;
     std::shared_ptr<IMesh> mesh;
     glm::mat4 model;
