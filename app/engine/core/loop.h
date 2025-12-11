@@ -4,6 +4,8 @@
 #include "engine/render/icanvas.h"
 #include "engine/utils.h"
 
+#include "time.h"
+
 namespace engine {
 
 class Loop {
@@ -12,6 +14,7 @@ class Loop {
     std::shared_ptr<spdlog::logger> _logger;
     std::shared_ptr<render::ICanvas> _canvas;
     std::shared_ptr<IGame> _game;
+    std::shared_ptr<Time> _time;
 
     bool _running = true;
     SDL_Event _event{};
@@ -19,11 +22,13 @@ public:
     Loop(
         const std::shared_ptr<Logger>& logger,
         const std::shared_ptr<render::ICanvas>& canvas,
-        const std::shared_ptr<IGame>& game
+        const std::shared_ptr<IGame>& game,
+        const std::shared_ptr<Time>& time
     ) :
         _logger(logger->Get()),
         _canvas(canvas),
-        _game(game) {
+        _game(game),
+        _time(time) {
     }
 
     int Run() {
@@ -38,12 +43,15 @@ public:
             std::chrono::duration<float> dt = now - lastTime;
             lastTime = now;
 
-            const float deltaTime = dt.count();
+            float deltaTime = dt.count();
+            deltaTime = std::clamp(deltaTime, 0.f, 0.3f);
 
             PollEvent();
 
-            _game->OnUpdate(deltaTime);
-            _game->OnDraw(deltaTime);
+            _time->deltaTime = deltaTime;
+
+            _game->OnUpdate();
+            _game->OnDraw();
 
             _canvas->Draw();
         }

@@ -56,10 +56,14 @@ add_executable(${PROJECT_NAME}
     app/engine/nodes/node_ecs.h
     app/game/game.h
     app/game/utils.h
-    app/game/render_system.h
-    app/game/renderable.h
-    app/game/transform.h
+        app/engine/ecs/render_system.h
+        app/engine/ecs/renderable.h
+        app/engine/ecs/transform.h
     app/engine/resources/assetsdb.h
+        app/game/game_scene.h
+        app/game/ball_system.h
+        app/game/ball.h
+        app/engine/core/time.h
 )
 # ---------- Definitions ----------
 target_compile_definitions(${PROJECT_NAME} PRIVATE

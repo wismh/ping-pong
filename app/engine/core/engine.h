@@ -36,6 +36,7 @@ public:
 
     bool Init() {
         auto injector = di::make_injector(
+            di::bind<Time>.in(di::singleton),
             di::bind<AssetsDb>.in(di::singleton),
             di::bind<Logger>.in(di::singleton),
             di::bind<IGame>.to<GameT>().in(di::singleton),

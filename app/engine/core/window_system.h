@@ -50,6 +50,12 @@ public:
     SDL_Window* GetWindow() const {
         return _window;
     }
+
+    glm::ivec2 Size() const {
+        int width, height;
+        SDL_GetWindowSize(_window, &width, &height);
+        return glm::ivec2(width, height);
+    }
 };
 
 }

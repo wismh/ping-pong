@@ -4,22 +4,24 @@
 
 namespace engine {
 
-class Node {
-    std::shared_ptr<Node> _parent;
-    std::vector<std::shared_ptr<Node>> _children;
+class Node : public std::enable_shared_from_this<Node> {
+    std::weak_ptr<Node> _parent;
+    std::vector<std::shared_ptr<Node>> _children{};
 public:
-    explicit Node(const std::shared_ptr<Node>& parent):
-        _parent(parent) {}
+    virtual ~Node() = default;
+    Node() = default;
 
     const std::vector<std::shared_ptr<Node>>& GetChildren() const {
         return _children;
     }
 
     void AddChild(const std::shared_ptr<Node>& child) {
+        child->_parent = shared_from_this();
         _children.push_back(child);
     }
 
     void RemoveChild(const std::shared_ptr<Node>& child) {
+        child->_parent.reset();
         std::erase(_children, child);
     }
 public:

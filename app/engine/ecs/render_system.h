@@ -1,17 +1,20 @@
 #pragma once
+#include "ecs.h"
 #include "renderable.h"
 #include "transform.h"
-#include "utils.h"
+#include "engine/render/command_buffer.h"
+#include "engine/render/camera.h"
+#include "../utils.h"
 
-namespace game {
+namespace engine::ecs {
 
 class RenderSystem final : public ecs::ISystem {
-    std::shared_ptr<er::CommandBuffer> _commandBuffer;
-    std::shared_ptr<er::Camera> _camera;
+    std::shared_ptr<render::CommandBuffer> _commandBuffer;
+    std::shared_ptr<render::Camera> _camera;
 public:
     explicit RenderSystem(
-        const std::shared_ptr<er::CommandBuffer>& commandBuffer,
-        const std::shared_ptr<er::Camera>& camera
+        const std::shared_ptr<render::CommandBuffer>& commandBuffer,
+        const std::shared_ptr<render::Camera>& camera
     ) :
         _commandBuffer(commandBuffer),
         _camera(camera) {
@@ -29,7 +32,7 @@ public:
             model = glm::rotate(model, transform.rotation.z, {0,0,1});
             model = glm::scale(model, transform.scale);
 
-            _commandBuffer->Push(er::CmdDrawMesh{
+            _commandBuffer->Push(render::CmdDrawMesh{
                 renderable.texture,
                 renderable.shader,
                 renderable.mesh,

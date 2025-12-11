@@ -32,6 +32,10 @@ public:
     const glm::mat4& GetProjection() const;
 
     static std::shared_ptr<Camera> CreateCamera();
+    static glm::vec3 ScreenToWorld(
+        const glm::vec3& screenPosition,
+        const std::shared_ptr<Camera>& camera,
+        const glm::ivec2& windowSize);
 };
 
 class CameraCache {

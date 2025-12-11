@@ -29,7 +29,7 @@ public:
     }
 
     template <typename T>
-    std::shared_ptr<T> Load(const std::string& localPath, bool cache = true) {
+    std::shared_ptr<T> Get(const std::string& localPath, bool cache = true) {
         auto& pipe = GetPipe<T>();
         auto path = GetAssetPath(localPath.c_str());
         return pipe.Load(path, cache);

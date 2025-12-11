@@ -1,7 +1,7 @@
 #pragma once
-#include "utils.h"
+#include "../utils.h"
 
-namespace game {
+namespace engine::ecs {
 
 struct Transform {
     glm::vec3 position{0};

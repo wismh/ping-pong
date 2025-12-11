@@ -39,6 +39,10 @@ public:
         gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress));
 
         _logger->info("OpenGL version info: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
         _logger->debug("Initialized canvas successfully");
 
         _initialized = true;
@@ -46,7 +50,7 @@ public:
     }
 
     void Draw() override {
-        glClearColor(0.0f, 0.2f, 0.2f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         _commandBuffer->Execute();
@@ -58,8 +62,12 @@ public:
         if (!_initialized)
             return;
 
+        _logger->info("Disposing canvas...");
+
         SDL_GL_DestroyContext(_context);
         _initialized = false;
+
+        _logger->debug("Disposed canvas successfully");
     }
 };
 

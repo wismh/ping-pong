@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_projection.hpp"
 
 namespace engine::render {
 
@@ -15,6 +16,21 @@ std::shared_ptr<Camera> Camera::CreateCamera() {
     return std::shared_ptr<Camera>(new Camera(
         new CameraCache()
     ));
+}
+
+glm::vec3 Camera::ScreenToWorld(
+    const glm::vec3& screenPosition,
+    const std::shared_ptr<Camera>& camera,
+    const glm::ivec2& windowSize
+) {
+    const glm::mat4 view = camera->GetView();
+    const glm::mat4 proj = camera->GetProjection();
+    const glm::vec4 viewport(0, 0, windowSize.x, windowSize.y);
+
+    glm::vec3 win = screenPosition;
+    win.y = viewport.w - win.y;
+
+    return glm::unProject(win, view, proj, viewport);
 }
 
 const glm::mat4& CameraCache::GetView(const Camera& camera) {
