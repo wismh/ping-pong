@@ -17,7 +17,8 @@ public:
         const std::shared_ptr<er::CommandBuffer>& commandBuffer,
         const std::shared_ptr<e::AssetsDb>& assetsDb,
         const std::shared_ptr<e::WindowSystem>& windowSystem,
-        const std::shared_ptr<e::Time>& time
+        const std::shared_ptr<e::Time>& time,
+        const std::shared_ptr<e::EventBus>& eventBus
     ) :
         _commandBuffer(commandBuffer),
         _assetsDb(assetsDb),
@@ -27,7 +28,8 @@ public:
             commandBuffer,
             assetsDb,
             windowSystem,
-            time
+            time,
+            eventBus
         )) {
 
     }

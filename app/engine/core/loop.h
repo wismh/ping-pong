@@ -46,9 +46,9 @@ public:
             float deltaTime = dt.count();
             deltaTime = std::clamp(deltaTime, 0.f, 0.3f);
 
-            PollEvent();
-
             _time->deltaTime = deltaTime;
+
+            PollEvents();
 
             _game->OnUpdate();
             _game->OnDraw();
@@ -67,7 +67,7 @@ public:
         _running = false;
     }
 private:
-    void PollEvent() {
+    void PollEvents() {
         while (SDL_PollEvent(&_event)) {
             if (_event.type == SDL_EVENT_QUIT)
                 _running = false;

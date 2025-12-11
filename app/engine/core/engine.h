@@ -19,6 +19,8 @@
 
 #include <boost/di/extension/injector.hpp>
 
+#include "event_bus.h"
+
 namespace engine {
 
 template <typename GameT>
@@ -36,6 +38,7 @@ public:
 
     bool Init() {
         auto injector = di::make_injector(
+            di::bind<EventBus>.in(di::singleton),
             di::bind<Time>.in(di::singleton),
             di::bind<AssetsDb>.in(di::singleton),
             di::bind<Logger>.in(di::singleton),

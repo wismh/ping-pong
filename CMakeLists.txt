@@ -49,21 +49,26 @@ add_executable(${PROJECT_NAME}
     app/engine/render/itexture.h
     app/engine/render/backends/opengl/opengl_texture.h
     app/engine/resources/texture_desc.h
-        app/engine/resources/texture_pipe.h
+    app/engine/resources/texture_pipe.h
     app/engine/resources/shader_pipe.h
     app/engine/nodes/node.h
     app/engine/ecs/ecs.h
     app/engine/nodes/node_ecs.h
     app/game/game.h
     app/game/utils.h
-        app/engine/ecs/render_system.h
-        app/engine/ecs/renderable.h
-        app/engine/ecs/transform.h
+    app/engine/ecs/render_system.h
+    app/engine/ecs/renderable.h
+    app/engine/ecs/transform.h
     app/engine/resources/assetsdb.h
-        app/game/game_scene.h
-        app/game/ball_system.h
-        app/game/ball.h
-        app/engine/core/time.h
+    app/game/game_scene.h
+    app/game/ball_system.h
+    app/game/ball.h
+    app/engine/core/time.h
+    app/game/player.h
+    app/engine/ecs/colliders.h
+    app/engine/core/event_bus.h
+        app/engine/ecs/physcis_system.h
+        app/engine/ecs/rigidbody.h
 )
 # ---------- Definitions ----------
 target_compile_definitions(${PROJECT_NAME} PRIVATE
