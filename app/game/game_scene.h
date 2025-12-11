@@ -1,9 +1,10 @@
 #pragma once
-#include "ball.h"
-#include "ball_system.h"
+#include "../engine/ecs/physcis_system.h"
 #include "../engine/ecs/render_system.h"
 #include "../engine/ecs/rigidbody.h"
-#include "../engine/ecs/physcis_system.h"
+#include "ball.h"
+#include "ball_system.h"
+#include "player_controll_system.h"
 #include "utils.h"
 
 namespace game {
@@ -44,8 +45,9 @@ public:
         const auto nodeEcs = std::make_shared<e::NodeEcs>();
 
         nodeEcs->GetWorld().AddSystem(std::make_unique<ecs::RenderSystem>(_commandBuffer, _camera));
-        nodeEcs->GetWorld().AddSystem(std::make_unique<BallSystem>(_eventBus, _windowSystem, _camera, _time, nodeEcs->GetWorld()));
         nodeEcs->GetWorld().AddSystem(std::make_unique<ecs::PhysicsSystem>(_eventBus, _time));
+        nodeEcs->GetWorld().AddSystem(std::make_unique<BallSystem>(_eventBus, _windowSystem, _camera, _time, nodeEcs->GetWorld()));
+        nodeEcs->GetWorld().AddSystem(std::make_unique<PlayerControllerSystem>(_eventBus));
 
         CreateBall(nodeEcs->GetWorld());
         CreateBluePlayer(nodeEcs->GetWorld());
@@ -104,6 +106,8 @@ private:
                 1
             }
         });
+        world.AttachComponent(entity, ecs::RigidBody{});
+        world.AttachComponent(entity, Player{});
     }
 
     void CreateBall(ecs::World& world) {

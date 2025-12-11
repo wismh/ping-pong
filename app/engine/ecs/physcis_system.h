@@ -3,6 +3,7 @@
 #include "ecs.h"
 #include "transform.h"
 #include "rigidbody.h"
+#include "../core/time.h"
 #include "../core/event_bus.h"
 
 namespace engine::ecs {

@@ -20,6 +20,7 @@
 #include <boost/di/extension/injector.hpp>
 
 #include "event_bus.h"
+#include "input_system.h"
 
 namespace engine {
 
@@ -38,6 +39,7 @@ public:
 
     bool Init() {
         auto injector = di::make_injector(
+            di::bind<InputSystem>.in(di::singleton),
             di::bind<EventBus>.in(di::singleton),
             di::bind<Time>.in(di::singleton),
             di::bind<AssetsDb>.in(di::singleton),

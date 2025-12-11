@@ -69,6 +69,9 @@ add_executable(${PROJECT_NAME}
     app/engine/core/event_bus.h
         app/engine/ecs/physcis_system.h
         app/engine/ecs/rigidbody.h
+        app/engine/core/input_system.h
+        app/game/input_actions.h
+        app/game/player_controll_system.h
 )
 # ---------- Definitions ----------
 target_compile_definitions(${PROJECT_NAME} PRIVATE

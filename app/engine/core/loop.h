@@ -1,8 +1,9 @@
 #pragma once
 
-#include "igame.h"
 #include "engine/render/icanvas.h"
 #include "engine/utils.h"
+#include "igame.h"
+#include "input_system.h"
 
 #include "time.h"
 
@@ -12,6 +13,7 @@ class Loop {
     using clock = std::chrono::high_resolution_clock;
 
     std::shared_ptr<spdlog::logger> _logger;
+    std::shared_ptr<InputSystem> _inputSystem;
     std::shared_ptr<render::ICanvas> _canvas;
     std::shared_ptr<IGame> _game;
     std::shared_ptr<Time> _time;
@@ -23,9 +25,11 @@ public:
         const std::shared_ptr<Logger>& logger,
         const std::shared_ptr<render::ICanvas>& canvas,
         const std::shared_ptr<IGame>& game,
-        const std::shared_ptr<Time>& time
+        const std::shared_ptr<Time>& time,
+        const std::shared_ptr<InputSystem>& inputSystem
     ) :
         _logger(logger->Get()),
+        _inputSystem(inputSystem),
         _canvas(canvas),
         _game(game),
         _time(time) {
@@ -71,6 +75,8 @@ private:
         while (SDL_PollEvent(&_event)) {
             if (_event.type == SDL_EVENT_QUIT)
                 _running = false;
+
+            _inputSystem->ProcessEvent(_event);
         }
     }
 };
