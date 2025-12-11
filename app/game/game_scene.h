@@ -80,6 +80,8 @@ private:
                1
            }
        });
+        world.AttachComponent(entity, ecs::RigidBody{});
+        world.AttachComponent(entity, Player{});
     }
 
     void CreateBluePlayer(ecs::World& world) {

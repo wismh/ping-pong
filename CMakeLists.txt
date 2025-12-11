@@ -67,11 +67,17 @@ add_executable(${PROJECT_NAME}
     app/game/player.h
     app/engine/ecs/colliders.h
     app/engine/core/event_bus.h
-        app/engine/ecs/physcis_system.h
-        app/engine/ecs/rigidbody.h
-        app/engine/core/input_system.h
-        app/game/input_actions.h
-        app/game/player_controll_system.h
+    app/engine/ecs/physcis_system.h
+    app/engine/ecs/rigidbody.h
+    app/engine/core/input_system.h
+    app/game/input_actions.h
+    app/game/player_controll_system.h
+    app/engine/nodes/node_ui.h
+    app/engine/ui/ui_element.h
+    app/engine/ui/label.h
+    app/engine/ui/ui_canvas.h
+    app/engine/ui/layout.h
+    app/engine/ui/ui_canvas.cpp
 )
 # ---------- Definitions ----------
 target_compile_definitions(${PROJECT_NAME} PRIVATE

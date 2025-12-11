@@ -1,4 +1,5 @@
 #pragma once
+#include "../ui/ui_element.h"
 #include "../utils.h"
 #include "igpu_mesh.h"
 #include "ishader.h"
@@ -19,9 +20,14 @@ struct CmdCustomDraw {
     std::function<void()> draw;
 };
 
+struct CmdDrawUI {
+    std::shared_ptr<ui::UIElement> uiElement;
+};
+
 using Command = std::variant<
     CmdDrawMesh,
-    CmdCustomDraw
+    CmdCustomDraw,
+    CmdDrawUI
 >;
 
 }

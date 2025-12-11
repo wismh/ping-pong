@@ -32,6 +32,7 @@ class Engine final {
     std::shared_ptr<WindowSystem> _windowSystem;
     std::shared_ptr<render::ICanvas> _canvas;
     std::shared_ptr<Loop> _loop;
+    std::shared_ptr<ui::UICanvas> _uiCanvas;
 public:
     ~Engine() {
         Dispose();
@@ -39,6 +40,7 @@ public:
 
     bool Init() {
         auto injector = di::make_injector(
+            di::bind<ui::UICanvas>.in(di::singleton),
             di::bind<InputSystem>.in(di::singleton),
             di::bind<EventBus>.in(di::singleton),
             di::bind<Time>.in(di::singleton),
@@ -59,11 +61,13 @@ public:
         _windowSystem = injector.template create<std::shared_ptr<WindowSystem>>();
         _canvas = injector.template create<std::shared_ptr<render::ICanvas>>();
         _loop = injector.template create<std::shared_ptr<Loop>>();
+        _uiCanvas = injector.template create<std::shared_ptr<ui::UICanvas>>();
 
         const auto success =
             InitilizeSDL3() &&
             _windowSystem->Create("Ping Pong", {800, 600}) &&
-            _canvas->Init();
+            _canvas->Init() &&
+            _uiCanvas->Init();
 
         if (!success) {
             _logger->error("Failed to initialize engine");

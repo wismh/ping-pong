@@ -1,13 +1,20 @@
 #pragma once
 
-#include "opengl_shader.h"
+#include "../../../ui/ui_canvas.h"
 #include "engine/render/irender_backend.h"
-#include "glm/gtc/type_ptr.hpp"
+#include "opengl_shader.h"
 
 namespace engine::render {
 
 class OpenGLRenderBackend final : public IRenderBackend {
+    std::shared_ptr<ui::UICanvas> _ui;
 public:
+    explicit OpenGLRenderBackend(
+        const std::shared_ptr<ui::UICanvas>& ui
+    ) : _ui(ui) {
+
+    }
+
     void Execute(const std::vector<Command> &commands) override {
         for (auto& cmd : commands) {
             std::visit([&](auto& c) {
@@ -17,11 +24,18 @@ public:
     }
 
 private:
+    void ExecuteCommand(const CmdDrawUI& c) const {
+        _ui->Draw(c.uiElement);
+    }
+
     static void ExecuteCommand(const CmdCustomDraw& c) {
         c.draw();
     }
 
     static void ExecuteCommand(const CmdDrawMesh& c) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
         const auto& shader =
             std::dynamic_pointer_cast<OpenGLShader>(c.shader);
 

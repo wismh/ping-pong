@@ -39,10 +39,6 @@ public:
         gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress));
 
         _logger->info("OpenGL version info: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
         _logger->debug("Initialized canvas successfully");
 
         _initialized = true;
