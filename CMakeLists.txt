@@ -78,6 +78,9 @@ add_executable(${PROJECT_NAME}
     app/engine/ui/ui_canvas.h
     app/engine/ui/layout.h
     app/engine/ui/ui_canvas.cpp
+    app/game/game_state.h
+    app/game/game_presenter_system.h
+    app/game/game_ui_system.h
 )
 # ---------- Definitions ----------
 target_compile_definitions(${PROJECT_NAME} PRIVATE

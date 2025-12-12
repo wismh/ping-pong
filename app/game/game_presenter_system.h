@@ -1,0 +1,119 @@
+#pragma once
+#include "../engine/ecs/physcis_system.h"
+#include "../engine/ecs/rigidbody.h"
+#include "../engine/ecs/transform.h"
+#include "ball.h"
+#include "game_state.h"
+#include "input_actions.h"
+#include "player.h"
+#include "utils.h"
+
+namespace game {
+
+class GamePresenterSystem final : public ecs::ISystem {
+    struct Bounds {
+        float left, right, top, bottom;
+    };
+
+    Bounds _worldBounds;
+    ecs::World& _world;
+    GameState& _gameState;
+public:
+    GamePresenterSystem(
+        const std::shared_ptr<e::EventBus>& eventBus,
+        const std::shared_ptr<e::WindowSystem>& windowSystem,
+        const std::shared_ptr<er::Camera>& camera,
+        ecs::World& world,
+        GameState& gameState
+    ) :
+        _world(world),
+        _gameState(gameState)
+    {
+        CalcWorldBounds(windowSystem, camera);
+        eventBus->Subscribe<e::InputEvent>([this](const e::InputEvent& e) {
+          if (e.action == InputActions::StartRound)
+              StartRound();
+        });
+    }
+
+    void Update(ecs::World& world) override {
+        world.ForEachWith<Ball, ecs::Transform>([this](
+            Ball& ball, const ecs::Transform& transform
+        ) {
+            bool goal = false;
+            constexpr float k_offset = 5;
+
+            if (transform.position.x > _worldBounds.right + k_offset) {
+                _gameState.bluePlayerScore += 1;
+                _gameState.isBlueTurn = true;
+                goal = true;
+            } else if (transform.position.x < _worldBounds.left - k_offset) {
+                _gameState.redPlayerScore += 1;
+                _gameState.isBlueTurn = false;
+                goal = true;
+            }
+
+            if (goal) {
+                _gameState.paused = true;
+                StopRound();
+            }
+        });
+    }
+private:
+    void StartRound() {
+        if (!_gameState.paused)
+            return;
+
+        _gameState.paused = false;
+        _world.ForEachWith<Ball, ecs::RigidBody, ecs::Transform>([this](
+           Ball& ball, ecs::RigidBody& rigidBody, ecs::Transform& transform
+        ) {
+            rigidBody.velocity = {
+                _gameState.isBlueTurn ? 15 : -15,
+                -15,
+                0
+            };
+        });
+    }
+
+    void StopRound() {
+        _world.ForEachWith<Ball, ecs::RigidBody, ecs::Transform>([this](
+           Ball& ball, ecs::RigidBody& rigidBody, ecs::Transform& transform
+        ) {
+            transform.position = {
+                _gameState.isBlueTurn ? -10 : 10,
+                0, 0
+            };
+            rigidBody.velocity = {};
+        });
+        _world.ForEachWith<Player, ecs::RigidBody, ecs::Transform>([this](
+           Player& player, ecs::RigidBody& rigidBody, ecs::Transform& transform
+        ) {
+            transform.position.y = 0;
+            rigidBody.velocity = {};
+        });
+    }
+
+    void CalcWorldBounds(
+        const std::shared_ptr<e::WindowSystem>& windowSystem,
+        const std::shared_ptr<er::Camera>& camera
+    ) {
+        const auto topLeft = er::Camera::ScreenToWorld(
+            {0, 0, 0},
+            camera,
+            windowSystem->Size()
+        );
+
+        const auto bottomRight = er::Camera::ScreenToWorld(
+            {windowSystem->Size(), 0},
+            camera,
+            windowSystem->Size()
+        );
+
+        _worldBounds = {
+            topLeft.x, bottomRight.x, topLeft.y,bottomRight.y
+        };
+    }
+};
+
+}

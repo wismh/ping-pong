@@ -10,32 +10,36 @@
 namespace game {
 
 class PlayerControllerSystem final : public ecs::ISystem {
+    bool _moveLeft = false;
+    bool _moveRight = false;
+    GameState& _gameState;
 public:
-    explicit PlayerControllerSystem(const std::shared_ptr<e::EventBus>& eventBus)
-    {
+    explicit PlayerControllerSystem(
+        const std::shared_ptr<e::EventBus>& eventBus,
+        GameState& gameState
+    ) : _gameState(gameState) {
         eventBus->Subscribe<e::InputEvent>([this](const e::InputEvent& e) {
             if (e.action == InputActions::PlayerMoveLeft)
-                moveLeft = true;
+                _moveLeft = true;
 
             if (e.action == InputActions::PlayerMoveRight)
-                moveRight = true;
+                _moveRight = true;
         });
     }
 
     void Update(ecs::World & world) override {
-        world.ForEachWith<Player, ecs::RigidBody>(
-            [&](Player& p, ecs::RigidBody& rb)
-        {
-            if (moveLeft)  rb.velocity.y = +10.f;
-            if (moveRight) rb.velocity.y = -10.f;
-        });
+        if (!_gameState.paused)
+            world.ForEachWith<Player, ecs::RigidBody>([this](
+                Player& player, ecs::RigidBody& rigidbody
+            ){
+                if (_moveLeft)
+                    rigidbody.velocity.y = +15.f;
+                if (_moveRight)
+                    rigidbody.velocity.y = -15.f;
+            });
 
-        moveLeft = moveRight = false;
+        _moveLeft = _moveRight = false;
     }
-
-private:
-    bool moveLeft = false;
-    bool moveRight = false;
 };
 
 }

@@ -43,8 +43,6 @@ public:
         world.ForEachWith<Ball, ecs::RigidBody, ecs::Transform>([this](
             Ball& ball, ecs::RigidBody& rigidBody, const ecs::Transform& transform
         ) {
-            if (transform.position.x > _worldBounds.right || transform.position.x < _worldBounds.left)
-                rigidBody.velocity.x = -rigidBody.velocity.x;
             if (transform.position.y > _worldBounds.top || transform.position.y < _worldBounds.bottom)
                 rigidBody.velocity.y = -rigidBody.velocity.y;
         });

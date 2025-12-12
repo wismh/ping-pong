@@ -49,6 +49,7 @@ public:
         _inputSystem->AddBinding(SDL_SCANCODE_A, InputActions::PlayerMoveLeft);
         _inputSystem->AddBinding(SDL_SCANCODE_S, InputActions::PlayerMoveRight);
         _inputSystem->AddBinding(SDL_SCANCODE_D, InputActions::PlayerMoveRight);
+        _inputSystem->AddBinding(SDL_SCANCODE_SPACE, InputActions::StartRound);
 
         auto path = e::AssetsDb::GetAssetPath("Roboto_Condensed-Regular.ttf");
         auto font = nvgCreateFont(_uiCanvas->GetContext(), "font", path.c_str());
@@ -59,7 +60,6 @@ public:
 
         _rootNode = std::make_shared<e::Node>();
         _rootNode->AddChild(_gameScene->Build());
-        _rootNode->AddChild(BuildUI());
     }
 
     void OnUpdate() override {
@@ -71,23 +71,6 @@ public:
     }
 
     void OnQuit() override {
-    }
-private:
-    std::shared_ptr<e::Node> BuildUI() {
-        const auto label = std::make_shared<eui::Label>();
-        label->text = "0 | 0";
-        label->color = {255, 255, 255, 255};
-        label->fontName = "font";
-        label->fontSize = 32;
-
-        const auto layout = std::make_shared<eui::Layout>();
-        layout->align = eui::Align::Center;
-        layout->direction = eui::Direction::Horizontal;
-        layout->size = {800, 600};
-
-        layout->children.emplace_back(label);
-
-        return std::make_shared<e::NodeUI>(_commandBuffer, layout);
     }
 };
 

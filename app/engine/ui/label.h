@@ -34,6 +34,9 @@ public:
     }
 
     void Draw(NVGcontext* vg, const glm::vec2 origin, glm::vec2 space) override {
+        if (!visible)
+            return;
+
         float height = GetSize(vg).y;
 
         nvgFontSize(vg, fontSize);

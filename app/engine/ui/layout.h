@@ -25,6 +25,9 @@ namespace engine::ui {
         }
 
         void Draw(NVGcontext* vg, const glm::vec2 origin, const glm::vec2 space) override {
+            if (!visible)
+                return;
+
             DrawSelf(vg, origin, space);
             DrawChildren(vg, origin, space);
         }
@@ -74,7 +77,7 @@ namespace engine::ui {
                     position.y += remainingMain;
             }
 
-            for (size_t i = 0; i < children.size(); i++)
+            for (size_t i = 0; i < children.size(); ++i)
             {
                 const auto& child = children[i];
 
