@@ -14,9 +14,7 @@ public:
 
     bool Init();
     void Draw(const std::shared_ptr<UIElement>& element);
-    NVGcontext* GetContext() {
-        return _vg;
-    }
+    NVGcontext* GetContext();
 };
 
 }

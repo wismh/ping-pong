@@ -7,8 +7,8 @@ namespace engine::ui {
 class UIElement {
 public:
     virtual ~UIElement() = default;
-    virtual void Update() = 0;
-    virtual void Draw(NVGcontext* vg, glm::ivec2 origin, glm::ivec2 space) = 0;
+    virtual glm::vec2 GetSize(NVGcontext* vg) = 0;
+    virtual void Draw(NVGcontext* vg, glm::vec2 origin, glm::vec2 space) = 0;
 };
 
 }

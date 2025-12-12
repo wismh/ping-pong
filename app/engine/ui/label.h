@@ -10,15 +10,11 @@ namespace engine::ui {
 class Label final : public UIElement {
 public:
     std::string text;
-    glm::vec4 color;
+    glm::i8vec4 color;
     std::string fontName;
-    int fontSize;
+    float fontSize;
 
-    void Update() override {
-
-    }
-
-    void Draw(NVGcontext* vg, glm::ivec2 origin, glm::ivec2 space) override {
+    glm::vec2 GetSize(NVGcontext* vg) override {
         nvgFontSize(vg, fontSize);
         nvgFontFace(vg, fontName.c_str());
 
@@ -31,10 +27,19 @@ public:
            bounds
        );
 
-        origin.y += bounds[3] - bounds[1];
+        return {
+            bounds[2] - bounds[0],
+            bounds[3] - bounds[1]
+        };
+    }
 
+    void Draw(NVGcontext* vg, const glm::vec2 origin, glm::vec2 space) override {
+        float height = GetSize(vg).y;
+
+        nvgFontSize(vg, fontSize);
+        nvgFontFace(vg, fontName.c_str());
         nvgFillColor(vg, nvgRGBA(color.r, color.g, color.b, color.a));
-        nvgText(vg, origin.x, origin.y, text.c_str(), nullptr);
+        nvgText(vg, origin.x, origin.y + height, text.c_str(), nullptr);
     }
 };
 

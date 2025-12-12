@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "engine/nodes/node_ui.h"
 #include "engine/ui/label.h"
+#include "engine/ui/layout.h"
 
 namespace game {
 
@@ -74,12 +75,19 @@ public:
 private:
     std::shared_ptr<e::Node> BuildUI() {
         const auto label = std::make_shared<eui::Label>();
-        label->text = "Hello, World!";
+        label->text = "0 | 0";
         label->color = {255, 255, 255, 255};
         label->fontName = "font";
         label->fontSize = 32;
 
-        return std::make_shared<e::NodeUI>(_commandBuffer, label);
+        const auto layout = std::make_shared<eui::Layout>();
+        layout->align = eui::Align::Center;
+        layout->direction = eui::Direction::Horizontal;
+        layout->size = {800, 600};
+
+        layout->children.emplace_back(label);
+
+        return std::make_shared<e::NodeUI>(_commandBuffer, layout);
     }
 };
 
