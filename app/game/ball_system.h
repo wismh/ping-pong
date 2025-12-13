@@ -1,32 +1,28 @@
 #pragma once
-#include "ball.h"
-#include "utils.h"
+#include "../engine/ecs/physcis_system.h"
 #include "../engine/ecs/rigidbody.h"
 #include "../engine/ecs/transform.h"
-#include "../engine/ecs/physcis_system.h"
+#include "ball.h"
+#include "game_state.h"
+#include "utils.h"
 
 namespace game {
 
 class BallSystem final : public ecs::ISystem {
-    struct Bounds {
-        float left, right, top, bottom;
-    };
-
-    Bounds _worldBounds;
     std::shared_ptr<e::Time> _time;
+    Bounds& _worldBounds;
     ecs::World& _world;
 public:
     BallSystem(
         const std::shared_ptr<e::EventBus>& eventBus,
-        const std::shared_ptr<e::WindowSystem>& windowSystem,
-        const std::shared_ptr<er::Camera>& camera,
         const std::shared_ptr<e::Time>& time,
-        ecs::World& world
+        ecs::World& world,
+        Bounds& worldBounds
     ) :
         _time(time),
+        _worldBounds(worldBounds),
         _world(world)
     {
-        CalcWorldBounds(windowSystem, camera);
         eventBus->Subscribe<ecs::CollisionEvent>([&](const ecs::CollisionEvent& e) {
             OnCollision(e);
         });
@@ -43,29 +39,11 @@ public:
         world.ForEachWith<Ball, ecs::RigidBody, ecs::Transform>([this](
             Ball& ball, ecs::RigidBody& rigidBody, const ecs::Transform& transform
         ) {
-            if (transform.position.y > _worldBounds.top || transform.position.y < _worldBounds.bottom)
-                rigidBody.velocity.y = -rigidBody.velocity.y;
+            if (transform.position.y > _worldBounds.top)
+                rigidBody.velocity.y = -ball.speed;
+            if (transform.position.y < _worldBounds.bottom)
+                rigidBody.velocity.y = ball.speed;
         });
-    }
-private:
-    void CalcWorldBounds(
-        const std::shared_ptr<e::WindowSystem>& windowSystem,
-        const std::shared_ptr<er::Camera>& camera
-    ) {
-        const auto topLeft = er::Camera::ScreenToWorld(
-            {0, 0, 0},
-            camera,
-            windowSystem->Size()
-        );
-        const auto bottomRight = er::Camera::ScreenToWorld(
-            {windowSystem->Size(), 0},
-            camera,
-            windowSystem->Size()
-        );
-
-        _worldBounds = {
-            topLeft.x, bottomRight.x, topLeft.y,bottomRight.y
-        };
     }
 };
 

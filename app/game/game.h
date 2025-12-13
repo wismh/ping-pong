@@ -45,10 +45,14 @@ public:
     }
 
     void OnStart() override {
-        _inputSystem->AddBinding(SDL_SCANCODE_W, InputActions::PlayerMoveLeft);
-        _inputSystem->AddBinding(SDL_SCANCODE_A, InputActions::PlayerMoveLeft);
-        _inputSystem->AddBinding(SDL_SCANCODE_S, InputActions::PlayerMoveRight);
-        _inputSystem->AddBinding(SDL_SCANCODE_D, InputActions::PlayerMoveRight);
+        _inputSystem->AddBinding(SDL_SCANCODE_W, InputActions::BluePlayerMoveLeft);
+        _inputSystem->AddBinding(SDL_SCANCODE_A, InputActions::BluePlayerMoveLeft);
+        _inputSystem->AddBinding(SDL_SCANCODE_S, InputActions::BluePlayerMoveRight);
+        _inputSystem->AddBinding(SDL_SCANCODE_D, InputActions::BluePlayerMoveRight);
+        _inputSystem->AddBinding(SDL_SCANCODE_UP, InputActions::RedPlayerMoveLeft);
+        _inputSystem->AddBinding(SDL_SCANCODE_LEFT, InputActions::RedPlayerMoveLeft);
+        _inputSystem->AddBinding(SDL_SCANCODE_DOWN, InputActions::RedPlayerMoveRight);
+        _inputSystem->AddBinding(SDL_SCANCODE_RIGHT, InputActions::RedPlayerMoveRight);
         _inputSystem->AddBinding(SDL_SCANCODE_SPACE, InputActions::StartRound);
 
         auto path = e::AssetsDb::GetAssetPath("Roboto_Condensed-Regular.ttf");

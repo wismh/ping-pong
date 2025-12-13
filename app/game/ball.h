@@ -4,7 +4,7 @@
 namespace game {
 
 struct Ball {
-    glm::vec3 velocity;
+    float speed = 15;
 };
 
 }

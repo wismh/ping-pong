@@ -11,25 +11,20 @@
 namespace game {
 
 class GamePresenterSystem final : public ecs::ISystem {
-    struct Bounds {
-        float left, right, top, bottom;
-    };
-
-    Bounds _worldBounds;
+    Bounds& _worldBounds;
     ecs::World& _world;
     GameState& _gameState;
 public:
     GamePresenterSystem(
         const std::shared_ptr<e::EventBus>& eventBus,
-        const std::shared_ptr<e::WindowSystem>& windowSystem,
-        const std::shared_ptr<er::Camera>& camera,
         ecs::World& world,
-        GameState& gameState
+        GameState& gameState,
+        Bounds& worldBounds
     ) :
+        _worldBounds(worldBounds),
         _world(world),
         _gameState(gameState)
     {
-        CalcWorldBounds(windowSystem, camera);
         eventBus->Subscribe<e::InputEvent>([this](const e::InputEvent& e) {
           if (e.action == InputActions::StartRound)
               StartRound();
@@ -69,8 +64,8 @@ private:
            Ball& ball, ecs::RigidBody& rigidBody, ecs::Transform& transform
         ) {
             rigidBody.velocity = {
-                _gameState.isBlueTurn ? 15 : -15,
-                -15,
+                _gameState.isBlueTurn ? ball.speed : -ball.speed,
+                -ball.speed,
                 0
             };
         });
@@ -92,27 +87,6 @@ private:
             transform.position.y = 0;
             rigidBody.velocity = {};
         });
-    }
-
-    void CalcWorldBounds(
-        const std::shared_ptr<e::WindowSystem>& windowSystem,
-        const std::shared_ptr<er::Camera>& camera
-    ) {
-        const auto topLeft = er::Camera::ScreenToWorld(
-            {0, 0, 0},
-            camera,
-            windowSystem->Size()
-        );
-
-        const auto bottomRight = er::Camera::ScreenToWorld(
-            {windowSystem->Size(), 0},
-            camera,
-            windowSystem->Size()
-        );
-
-        _worldBounds = {
-            topLeft.x, bottomRight.x, topLeft.y,bottomRight.y
-        };
     }
 };
 

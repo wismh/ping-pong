@@ -2,8 +2,17 @@
 
 namespace game {
 
+enum class PlayerControlBy {
+    BLUE_ACTIONS,
+    RED_ACTIONS,
+    AI
+};
+
 struct Player {
-    
+    float speed = 15;
+    PlayerControlBy control = PlayerControlBy::BLUE_ACTIONS;
+    float reactionTime = 0.15f;
+    float difficulty = 5;
 };
 
 }

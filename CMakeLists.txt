@@ -81,6 +81,7 @@ add_executable(${PROJECT_NAME}
     app/game/game_state.h
     app/game/game_presenter_system.h
     app/game/game_ui_system.h
+    app/game/player_ai_system.h
 )
 # ---------- Definitions ----------
 target_compile_definitions(${PROJECT_NAME} PRIVATE

@@ -11,6 +11,7 @@
 #include "game_presenter_system.h"
 #include "game_state.h"
 #include "game_ui_system.h"
+#include "player_ai_system.h"
 #include "player_controll_system.h"
 #include "utils.h"
 
@@ -29,6 +30,7 @@ class GameScene {
     std::shared_ptr<eui::Layout> _prepareLayout;
     std::shared_ptr<eui::Label> _scoreLabel;
     GameState _gameState;
+    Bounds _worldBounds;
 public:
     GameScene(
         const std::shared_ptr<e::Logger>& logger,
@@ -52,6 +54,8 @@ public:
         _camera->orthographic = true;
         _camera->nearClip = -1.f;
         _camera->aspect = _windowSystem->Size().x / static_cast<float>(_windowSystem->Size().y);
+
+        CalcWorldBounds(_windowSystem, _camera);
 
         auto node = std::make_shared<e::Node>();
         node->AddChild(BuildUINode());
@@ -100,10 +104,11 @@ private:
 
         world.AddSystem(std::make_unique<ecs::RenderSystem>(_commandBuffer, _camera));
         world.AddSystem(std::make_unique<ecs::PhysicsSystem>(_eventBus, _time));
-        world.AddSystem(std::make_unique<BallSystem>(_eventBus, _windowSystem, _camera, _time, nodeEcs->GetWorld()));
-        world.AddSystem(std::make_unique<PlayerControllerSystem>(_eventBus, _gameState));
+        world.AddSystem(std::make_unique<BallSystem>(_eventBus, _time, world, _worldBounds));
+        world.AddSystem(std::make_unique<PlayerControllerSystem>(_eventBus, _gameState, _worldBounds));
         world.AddSystem(std::make_unique<GameUISystem>(_scoreLabel, _prepareLayout, _gameState));
-        world.AddSystem(std::make_unique<GamePresenterSystem>(_eventBus, _windowSystem, _camera, world, _gameState));
+        world.AddSystem(std::make_unique<GamePresenterSystem>(_eventBus, world, _gameState, _worldBounds));
+        world.AddSystem(std::make_unique<PlayerAISystem>(_time, _gameState, _worldBounds));
 
         CreateBall(world);
         CreateBluePlayer(world);
@@ -137,7 +142,9 @@ private:
            }
        });
         world.AttachComponent(entity, ecs::RigidBody{});
-        world.AttachComponent(entity, Player{});
+        world.AttachComponent(entity, Player{
+            .control = PlayerControlBy::AI
+        });
     }
 
     void CreateBluePlayer(ecs::World& world) {
@@ -165,7 +172,9 @@ private:
             }
         });
         world.AttachComponent(entity, ecs::RigidBody{});
-        world.AttachComponent(entity, Player{});
+        world.AttachComponent(entity, Player{
+            .control = PlayerControlBy::BLUE_ACTIONS
+        });
     }
 
     void CreateBall(ecs::World& world) {
@@ -192,6 +201,27 @@ private:
             }
         });
         world.AttachComponent(entity, Ball{});
+    }
+
+    void CalcWorldBounds(
+      const std::shared_ptr<e::WindowSystem>& windowSystem,
+      const std::shared_ptr<er::Camera>& camera
+  ) {
+        const auto topLeft = er::Camera::ScreenToWorld(
+            {0, 0, 0},
+            camera,
+            windowSystem->Size()
+        );
+
+        const auto bottomRight = er::Camera::ScreenToWorld(
+            {windowSystem->Size(), 0},
+            camera,
+            windowSystem->Size()
+        );
+
+        _worldBounds = {
+            topLeft.x, bottomRight.x, topLeft.y,bottomRight.y
+        };
     }
 };
 
