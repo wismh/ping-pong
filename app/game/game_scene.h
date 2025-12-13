@@ -23,12 +23,15 @@ class GameScene {
     std::shared_ptr<er::CommandBuffer> _commandBuffer;
     std::shared_ptr<e::WindowSystem> _windowSystem;
     std::shared_ptr<e::EventBus> _eventBus;
+    std::shared_ptr<e::ApplicationState> _appState;
     std::shared_ptr<e::Time> _time;
 
     std::shared_ptr<er::Camera> _camera;
 
+    std::shared_ptr<eui::Layout> _menuLayout;
     std::shared_ptr<eui::Layout> _prepareLayout;
     std::shared_ptr<eui::Label> _scoreLabel;
+    std::shared_ptr<eui::Label> _resultLabel;
     GameState _gameState;
     Bounds _worldBounds;
 public:
@@ -38,14 +41,16 @@ public:
         const std::shared_ptr<e::AssetsDb>& assetsDb,
         const std::shared_ptr<e::WindowSystem>& windowSystem,
         const std::shared_ptr<e::Time>& time,
-        const std::shared_ptr<e::EventBus>& eventBus
+        const std::shared_ptr<e::EventBus>& eventBus,
+        const std::shared_ptr<e::ApplicationState>& appState
     ) :
         _assetsDb(assetsDb),
         _logger(logger->Get()),
         _commandBuffer(commandBuffer),
         _windowSystem(windowSystem),
         _time(time),
-        _eventBus(eventBus) {
+        _eventBus(eventBus),
+        _appState(appState) {
 
     }
 
@@ -58,12 +63,83 @@ public:
         CalcWorldBounds(_windowSystem, _camera);
 
         auto node = std::make_shared<e::Node>();
-        node->AddChild(BuildUINode());
-        node->AddChild(BuildEcsNode());
+        auto uiNode = BuildUINode();
+        auto ecsNode = BuildEcsNode();
+
+        node->AddChild(ecsNode);
+        node->AddChild(uiNode);
 
         return node;
     }
 private:
+
+    std::shared_ptr<eui::Layout> BuildUIMenu() {
+        _menuLayout = std::make_shared<eui::Layout>();
+        _menuLayout->relative = false;
+        _menuLayout->size = {800, 600};
+        _menuLayout->align = eui::Align::Center;
+        _menuLayout->crossAlign = eui::Align::Center;
+        _menuLayout->color = {0, 0, 0, 150};
+
+        const auto layout = std::make_shared<eui::Layout>();
+        layout->size = {400, 300};
+        layout->color = {20, 50, 130, 255};
+        layout->direction = eui::Direction::Vertical;
+        layout->gap = {0, 20};
+        layout->radius = 50;
+        layout->strokeWidth = 2;
+        layout->strokeColor = {130, 180, 230, 255};
+
+        const auto header = std::make_shared<eui::Layout>();
+        header->size = {400, 80};
+        header->align = eui::Align::Center;
+        header->crossAlign = eui::Align::End;
+
+        _resultLabel = std::make_shared<eui::Label>();
+        _resultLabel->text = "Ping-Pong!";
+        _resultLabel->color = {255, 255, 255, 255};
+        _resultLabel->fontName = "font";
+        _resultLabel->fontSize = 32;
+
+        header->children.emplace_back(_resultLabel);
+        layout->children.emplace_back(header);
+
+        const auto layoutButtons = std::make_shared<eui::Layout>();
+        layoutButtons->size = {400, 200};
+        layoutButtons->align = eui::Align::Center;
+        layoutButtons->crossAlign = eui::Align::Center;
+        layoutButtons->gap = {50, 0};
+
+        const auto restartButton = std::make_shared<eui::Layout>();
+        restartButton->size = {100, 100};
+        restartButton->color = {50, 70, 180, 255};
+        restartButton->image = _assetsDb->Get<e::UIImage>("play.png");
+        restartButton->clickable = true;
+        restartButton->onClick = [this]() {
+            _gameState.bluePlayerScore = 0;
+            _gameState.redPlayerScore = 0;
+            _menuLayout->visible = false;
+        };
+
+        const auto exitButton = std::make_shared<eui::Layout>();
+        exitButton->size = {100, 100};
+        exitButton->color = {50, 70, 180, 255};
+        exitButton->image = _assetsDb->Get<e::UIImage>("door.png");
+        exitButton->clickable = true;
+        exitButton->onClick = [this]() {
+            _appState->Quit();
+        };
+
+        layoutButtons->children.emplace_back(restartButton);
+        layoutButtons->children.emplace_back(exitButton);
+
+        layout->children.emplace_back(layoutButtons);
+
+        _menuLayout->children.emplace_back(layout);
+
+        return _menuLayout;
+    }
+
     std::shared_ptr<e::Node> BuildUINode() {
         const auto label = std::make_shared<eui::Label>();
         label->text = "Press 'space' for start round!";
@@ -93,8 +169,9 @@ private:
 
         layout->children.emplace_back(_scoreLabel);
         layout->children.emplace_back(_prepareLayout);
+        layout->children.emplace_back(BuildUIMenu());
 
-        return std::make_shared<e::NodeUI>(_commandBuffer, layout);
+        return std::make_shared<e::NodeUI>(_eventBus, _commandBuffer, layout);
     }
 
     std::shared_ptr<e::Node> BuildEcsNode() {
@@ -106,7 +183,7 @@ private:
         world.AddSystem(std::make_unique<ecs::PhysicsSystem>(_eventBus, _time));
         world.AddSystem(std::make_unique<BallSystem>(_eventBus, _time, world, _worldBounds));
         world.AddSystem(std::make_unique<PlayerControllerSystem>(_eventBus, _gameState, _worldBounds));
-        world.AddSystem(std::make_unique<GameUISystem>(_scoreLabel, _prepareLayout, _gameState));
+        world.AddSystem(std::make_unique<GameUISystem>(_scoreLabel, _prepareLayout, _menuLayout, _resultLabel, _gameState));
         world.AddSystem(std::make_unique<GamePresenterSystem>(_eventBus, world, _gameState, _worldBounds));
         world.AddSystem(std::make_unique<PlayerAISystem>(_time, _gameState, _worldBounds));
 

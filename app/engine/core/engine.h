@@ -40,6 +40,7 @@ public:
 
     bool Init() {
         auto injector = di::make_injector(
+            di::bind<ApplicationState>().in(di::singleton),
             di::bind<ui::UICanvas>.in(di::singleton),
             di::bind<InputSystem>.in(di::singleton),
             di::bind<EventBus>.in(di::singleton),

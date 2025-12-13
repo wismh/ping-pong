@@ -82,6 +82,9 @@ add_executable(${PROJECT_NAME}
     app/game/game_presenter_system.h
     app/game/game_ui_system.h
     app/game/player_ai_system.h
+    app/engine/resources/ui_image.h
+    app/engine/resources/ui_image_pipe.h
+        app/engine/core/application_state.h
 )
 # ---------- Definitions ----------
 target_compile_definitions(${PROJECT_NAME} PRIVATE

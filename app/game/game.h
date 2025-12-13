@@ -26,7 +26,8 @@ public:
         const std::shared_ptr<e::Time>& time,
         const std::shared_ptr<e::EventBus>& eventBus,
         const std::shared_ptr<e::InputSystem>& inputSystem,
-        const std::shared_ptr<eui::UICanvas>& uiCanvas
+        const std::shared_ptr<eui::UICanvas>& uiCanvas,
+        const std::shared_ptr<e::ApplicationState>& appState
     ) :
         _commandBuffer(commandBuffer),
         _assetsDb(assetsDb),
@@ -39,7 +40,8 @@ public:
             assetsDb,
             windowSystem,
             time,
-            eventBus
+            eventBus,
+            appState
         )) {
 
     }

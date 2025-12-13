@@ -16,7 +16,19 @@ struct InputBinding {
     std::string action;
 };
 
+struct MouseEvent {
+    enum class Type {
+        Down, Up, Move
+    } type;
+
+    glm::vec2 position {};
+    glm::vec2 relative {};
+    uint8_t button = 0;
+};
+    
 class InputSystem {
+    std::vector<InputBinding> _bindings;
+    std::shared_ptr<EventBus> _eventBus;
 public:
     explicit InputSystem(const std::shared_ptr<EventBus>& eventBus)
         : _eventBus(eventBus) {}
@@ -26,19 +38,68 @@ public:
     }
 
     void ProcessEvent(const SDL_Event& e) {
-        if (e.type == SDL_EVENT_KEY_DOWN) {
-            const auto sc = e.key.scancode;
+        switch (e.type) {
+            case SDL_EVENT_KEY_DOWN:
+                ProcessKeyDown(e);
+                break;
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                ProcessMouseDown(e);
+                break;
+            case SDL_EVENT_MOUSE_BUTTON_UP:
+                ProcessMouseUp(e);
+                break;
+            case SDL_EVENT_MOUSE_MOTION:
+                ProcessMouseMove(e);
+                break;
+            default:
+                break;
+        }
+    }
+private:
+    void ProcessKeyDown(const SDL_Event& e) {
+        const auto sc = e.key.scancode;
 
-            for (auto& [key, action] : _bindings) {
-                if (key == sc)
-                    _eventBus->Emit<InputEvent>(action);
-            }
+        for (auto& [key, action] : _bindings) {
+            if (key == sc)
+                _eventBus->Emit<InputEvent>(action);
         }
     }
 
-private:
-    std::vector<InputBinding> _bindings;
-    std::shared_ptr<EventBus> _eventBus;
+    void ProcessMouseDown(const SDL_Event& e) {
+        _eventBus->Emit<MouseEvent>(MouseEvent{
+           .type = MouseEvent::Type::Down,
+           .position  = {
+                static_cast<float>(e.button.x),
+                static_cast<float>(e.button.y)
+           },
+           .button = e.button.button
+       });
+    }
+
+    void ProcessMouseUp(const SDL_Event& e) {
+        _eventBus->Emit<MouseEvent>(MouseEvent{
+           .type =  MouseEvent::Type::Up,
+           .position = {
+                static_cast<float>(e.button.x),
+                static_cast<float>(e.button.y)
+            },
+           .button = e.button.button
+        });
+    }
+
+    void ProcessMouseMove(const SDL_Event& e) {
+        _eventBus->Emit<MouseEvent>(MouseEvent{
+            .type = MouseEvent::Type::Move,
+            .position = {
+                static_cast<float>(e.motion.x),
+                static_cast<float>(e.motion.y)
+            },
+            .relative  = {
+                static_cast<float>(e.motion.xrel),
+                static_cast<float>(e.motion.yrel)
+            }
+        });
+    }
 };
 
 }

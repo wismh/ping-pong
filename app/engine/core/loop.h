@@ -1,5 +1,6 @@
 #pragma once
 
+#include "application_state.h"
 #include "engine/render/icanvas.h"
 #include "engine/utils.h"
 #include "igame.h"
@@ -17,8 +18,8 @@ class Loop {
     std::shared_ptr<render::ICanvas> _canvas;
     std::shared_ptr<IGame> _game;
     std::shared_ptr<Time> _time;
+    std::shared_ptr<ApplicationState> _appState;
 
-    bool _running = true;
     SDL_Event _event{};
 public:
     Loop(
@@ -26,13 +27,15 @@ public:
         const std::shared_ptr<render::ICanvas>& canvas,
         const std::shared_ptr<IGame>& game,
         const std::shared_ptr<Time>& time,
-        const std::shared_ptr<InputSystem>& inputSystem
+        const std::shared_ptr<InputSystem>& inputSystem,
+        const std::shared_ptr<ApplicationState>& appState
     ) :
         _logger(logger->Get()),
         _inputSystem(inputSystem),
         _canvas(canvas),
         _game(game),
-        _time(time) {
+        _time(time),
+        _appState(appState) {
     }
 
     int Run() {
@@ -42,7 +45,7 @@ public:
 
         auto lastTime = clock::now();
 
-        while (_running) {
+        while (_appState->_running) {
             auto now = clock::now();
             std::chrono::duration<float> dt = now - lastTime;
             lastTime = now;
@@ -65,16 +68,11 @@ public:
         _logger->info("Exited application main loop...");
         return EXIT_SUCCESS;
     }
-
-    void Quit() {
-        _logger->info("Quit");
-        _running = false;
-    }
 private:
     void PollEvents() {
         while (SDL_PollEvent(&_event)) {
             if (_event.type == SDL_EVENT_QUIT)
-                _running = false;
+                _appState->Quit();
 
             _inputSystem->ProcessEvent(_event);
         }
