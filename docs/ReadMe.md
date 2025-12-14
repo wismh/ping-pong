@@ -20,7 +20,8 @@
 
 1. Clone repo 
     ```bash
-    git clone https://github.com/wismh/ping-pong.git 
+    git clone https://github.com/wismh/ping-pong.git
+    cd ping-pong 
     ```
 2. Ініціалізація submodules
     ```bash
