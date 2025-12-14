@@ -16,24 +16,4 @@ add_subdirectory(external/tinyxml2)
 add_subdirectory(external/SDL_mixer)
 
 add_subdirectory(engine)
-
-# ---------- Our Source ----------
-add_executable(${PROJECT_NAME}
-    app/main.cpp
-    app/game/game.h
-    app/game/utils.h
-    app/game/game_scene.h
-    app/game/ball_system.h
-    app/game/ball.h
-    app/game/player.h
-    app/game/input_actions.h
-    app/game/player_controll_system.h
-    app/game/game_state.h
-    app/game/game_presenter_system.h
-    app/game/game_ui_system.h
-    app/game/player_ai_system.h
-    app/game/ai_params.h
-)
-
-target_link_libraries(${PROJECT_NAME} engine)
-target_include_directories(${PROJECT_NAME} PRIVATE engine/include)
+add_subdirectory(app)
