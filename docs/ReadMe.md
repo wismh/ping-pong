@@ -37,7 +37,7 @@
    ```
 5. Запуск 
     ```bash
-   cd ./build/bin/
+   cd ./build/bin/Debug
    ./game.exe
     ```
 
