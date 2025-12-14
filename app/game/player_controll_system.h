@@ -43,7 +43,7 @@ public:
     }
 
     void Update(ecs::World& world) override {
-        if (!_gameState.paused)
+        if (!_gameState.waitForRound)
             world.ForEachWith<Player, ecs::Transform, ecs::RigidBody>([&](
                 const Player& player, ecs::Transform& transform, ecs::RigidBody& rigidbody
             ){

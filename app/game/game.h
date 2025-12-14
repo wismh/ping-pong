@@ -5,6 +5,7 @@
 #include "engine/nodes/node_ui.h"
 #include "engine/ui/label.h"
 #include "engine/ui/layout.h"
+#include "engine/audio/audio_events_manager.h"
 
 namespace game {
 
@@ -15,6 +16,7 @@ class Game final : public e::IGame {
     std::shared_ptr<e::Node> _rootNode;
     std::shared_ptr<e::InputSystem> _inputSystem;
     std::shared_ptr<eui::UICanvas> _uiCanvas;
+    std::shared_ptr<e::EventBus> _eventBus;
 
     std::shared_ptr<GameScene> _gameScene;
 public:
@@ -32,6 +34,7 @@ public:
         _commandBuffer(commandBuffer),
         _assetsDb(assetsDb),
         _logger(logger->Get()),
+        _eventBus(eventBus),
         _inputSystem(inputSystem),
         _uiCanvas(uiCanvas),
         _gameScene(std::make_shared<GameScene>(
@@ -66,6 +69,8 @@ public:
 
         _rootNode = std::make_shared<e::Node>();
         _rootNode->AddChild(_gameScene->Build());
+
+        _eventBus->Emit<e::PlayMusicEvent>("music.wav");
     }
 
     void OnUpdate() override {

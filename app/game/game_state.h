@@ -10,6 +10,7 @@ struct GameState {
     int bluePlayerScore = 0;
     int redPlayerScore = 0;
     bool paused = true;
+    bool waitForRound = true;
     bool isBlueTurn = true;
 };
 

@@ -49,17 +49,17 @@ public:
             }
 
             if (goal) {
-                _gameState.paused = true;
+                _gameState.waitForRound = true;
                 StopRound();
             }
         });
     }
 private:
     void StartRound() {
-        if (!_gameState.paused)
+        if (!_gameState.waitForRound || _gameState.paused)
             return;
 
-        _gameState.paused = false;
+        _gameState.waitForRound = false;
         _world.ForEachWith<Ball, ecs::RigidBody, ecs::Transform>([this](
            Ball& ball, ecs::RigidBody& rigidBody, ecs::Transform& transform
         ) {
@@ -72,6 +72,9 @@ private:
     }
 
     void StopRound() {
+        if (_gameState.bluePlayerScore >= 5 || _gameState.redPlayerScore >= 5)
+            _gameState.paused = true;
+
         _world.ForEachWith<Ball, ecs::RigidBody, ecs::Transform>([this](
            Ball& ball, ecs::RigidBody& rigidBody, ecs::Transform& transform
         ) {
@@ -86,6 +89,7 @@ private:
         ) {
             transform.position.y = 0;
             rigidBody.velocity = {};
+            player.reflectionCombo = 0;
         });
     }
 };

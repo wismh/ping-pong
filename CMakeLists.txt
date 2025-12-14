@@ -5,13 +5,20 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+set(SDLMIXER_OGG OFF CACHE BOOL "" FORCE)
+set(SDLMIXER_OGG_STB OFF CACHE BOOL "" FORCE)
+set(SDLMIXER_OGG_VORBIS OFF CACHE BOOL "" FORCE)
+set(SDLMIXER_WAV ON CACHE BOOL "" FORCE)
+set(SDLMIXER_VENDORED OFF CACHE BOOL "" FORCE)
+
 add_subdirectory(external/SDL3)
 add_subdirectory(external/glm)
 add_subdirectory(external/glad)
 add_subdirectory(external/spdlog)
 add_subdirectory(external/tinyxml2)
+add_subdirectory(external/SDL_mixer)
 
-add_library(nanovg
+add_library(nanovg STATIC
     external/nanovg/src/nanovg.c
 )
 
@@ -84,7 +91,11 @@ add_executable(${PROJECT_NAME}
     app/game/player_ai_system.h
     app/engine/resources/ui_image.h
     app/engine/resources/ui_image_pipe.h
-        app/engine/core/application_state.h
+    app/engine/core/application_state.h
+        app/engine/audio/audio_system.h
+        app/engine/audio/audio.h
+        app/engine/audio/audio_events_manager.h
+        app/game/ai.h
 )
 # ---------- Definitions ----------
 target_compile_definitions(${PROJECT_NAME} PRIVATE
@@ -101,6 +112,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 # ---------- Link everything ----------
 target_link_libraries(${PROJECT_NAME}
     SDL3::SDL3
+    SDL3_mixer::SDL3_mixer
     glad
     glm
     spdlog::spdlog_header_only

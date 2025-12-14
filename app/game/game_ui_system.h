@@ -30,15 +30,14 @@ public:
     }
 
     void Update(ecs::World& world) override {
-        _prepareLayout->visible = _gameState.paused;
+        _prepareLayout->visible = _gameState.waitForRound;
         _scoreLabel->text = fmt::format(
             "{} : {}",
             _gameState.bluePlayerScore,
             _gameState.redPlayerScore
         );
 
-        if (_gameState.bluePlayerScore + _gameState.redPlayerScore >= 3) {
-            _gameState.paused = true;
+        if (_gameState.paused) {
             _menuLayout->visible = true;
             _resultLabel->text =
                 _gameState.bluePlayerScore > _gameState.redPlayerScore ?

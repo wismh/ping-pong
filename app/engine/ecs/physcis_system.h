@@ -1,10 +1,13 @@
 #pragma once
+#include <unordered_set>
+
+
+#include "../core/event_bus.h"
+#include "../core/time.h"
 #include "colliders.h"
 #include "ecs.h"
-#include "transform.h"
 #include "rigidbody.h"
-#include "../core/time.h"
-#include "../core/event_bus.h"
+#include "transform.h"
 
 namespace engine::ecs {
 
@@ -14,9 +17,15 @@ struct CollisionEvent {
 };
 
 class PhysicsSystem final : public ISystem {
+    struct PairHash {
+        size_t operator()(const std::pair<Entity, Entity>& p) const noexcept {
+            return std::hash<Entity>{}(p.first) ^ (std::hash<Entity>{}(p.second) << 1);
+        }
+    };
+
+    std::unordered_set<std::pair<Entity, Entity>, PairHash> lastSet;
     std::shared_ptr<EventBus> _eventBus;
     std::shared_ptr<Time> _time;
-
 public:
     explicit PhysicsSystem(
         const std::shared_ptr<EventBus>& eventBus,
@@ -38,14 +47,13 @@ private:
         });
     }
 
-    void Collisions(World& world) const {
-        std::vector<std::tuple<Entity, Transform*, BoxCollider*>> colliders;
+    void Collisions(World &world) {
+        std::vector<std::tuple<Entity, Transform *, BoxCollider *>> colliders;
 
         world.ForEach<Transform, BoxCollider>(
-           [&](Entity& e, Transform& t, BoxCollider& c) {
-               colliders.emplace_back(e, &t, &c);
-           }
-       );
+                [&](Entity &e, Transform &t, BoxCollider &c) { colliders.emplace_back(e, &t, &c); });
+
+        std::vector<std::tuple<Entity, Entity>> currentIntersects {};
 
         for (size_t i = 0; i < colliders.size(); ++i) {
             auto [a, ta, ca] = colliders[i];
@@ -59,15 +67,33 @@ private:
                 const glm::vec3 bMin = tb->position - cb->size * 0.5f;
                 const glm::vec3 bMax = tb->position + cb->size * 0.5f;
 
-                const bool intersects =
-                    (aMin.x <= bMax.x && aMax.x >= bMin.x) &&
-                    (aMin.y <= bMax.y && aMax.y >= bMin.y) &&
-                    (aMin.z <= bMax.z && aMax.z >= bMin.z);
+                const bool intersects = (aMin.x <= bMax.x && aMax.x >= bMin.x) &&
+                                        (aMin.y <= bMax.y && aMax.y >= bMin.y) &&
+                                        (aMin.z <= bMax.z && aMax.z >= bMin.z);
 
                 if (intersects)
-                    _eventBus->Emit<CollisionEvent>(a, b);
+                    currentIntersects.emplace_back(a, b);
             }
         }
+
+        std::unordered_set<std::pair<Entity, Entity>, PairHash> newLast;
+
+        for (const auto& [a, b] : currentIntersects) {
+            auto pair = MakePair(a, b);
+
+            if (!lastSet.contains(pair))
+                _eventBus->Emit<CollisionEvent>(a, b);
+
+            newLast.insert(pair);
+        }
+
+        lastSet = std::move(newLast);
+    }
+
+    static std::pair<Entity, Entity> MakePair(Entity a, Entity b) {
+        if (a < b)
+            return {a, b};
+        return {b, a};
     }
 };
 

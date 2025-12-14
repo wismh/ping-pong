@@ -11,8 +11,7 @@ enum class PlayerControlBy {
 struct Player {
     float speed = 15;
     PlayerControlBy control = PlayerControlBy::BLUE_ACTIONS;
-    float reactionTime = 0.15f;
-    float difficulty = 5;
+    int reflectionCombo = 0;
 };
 
 }

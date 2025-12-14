@@ -9,6 +9,7 @@
 #include "shader_pipe.h"
 #include "texture_pipe.h"
 #include "ui_image_pipe.h"
+#include "audio_pipe.h"
 
 namespace engine {
 
@@ -19,12 +20,14 @@ public:
     AssetsDb(
         const std::shared_ptr<Logger>& logger,
         const std::shared_ptr<render::IGraphicFabric>& fabric,
-        const std::shared_ptr<ui::UICanvas>& canvas
+        const std::shared_ptr<ui::UICanvas>& canvas,
+        const std::shared_ptr<AudioSystem>& audioSystem
     ) {
         RegisterPipe<render::IMesh, MeshPipe>(logger, fabric);
         RegisterPipe<render::ITexture, TexturePipe>(logger, fabric);
         RegisterPipe<render::IShader, ShaderPipe>(logger, fabric);
         RegisterPipe<UIImage, UIImagePipe>(logger, canvas);
+        RegisterPipe<Audio, AudioPipe>(logger, audioSystem);
     }
 
     static std::string GetAssetPath(const char* localPath) {

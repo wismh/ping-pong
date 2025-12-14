@@ -118,6 +118,7 @@ private:
         restartButton->onClick = [this]() {
             _gameState.bluePlayerScore = 0;
             _gameState.redPlayerScore = 0;
+            _gameState.paused = false;
             _menuLayout->visible = false;
         };
 
@@ -185,7 +186,7 @@ private:
         world.AddSystem(std::make_unique<PlayerControllerSystem>(_eventBus, _gameState, _worldBounds));
         world.AddSystem(std::make_unique<GameUISystem>(_scoreLabel, _prepareLayout, _menuLayout, _resultLabel, _gameState));
         world.AddSystem(std::make_unique<GamePresenterSystem>(_eventBus, world, _gameState, _worldBounds));
-        world.AddSystem(std::make_unique<PlayerAISystem>(_time, _gameState, _worldBounds));
+        world.AddSystem(std::make_unique<PlayerAISystem>(_time, _gameState, _worldBounds, AiParams{}));
 
         CreateBall(world);
         CreateBluePlayer(world);

@@ -1,8 +1,9 @@
 #pragma once
 #include "engine/ecs/ecs.h"
 #include "engine/ecs/rigidbody.h"
-#include "game_state.h"
 
+#include "game_state.h"
+#include "ai_params.h"
 #include "player.h"
 #include "utils.h"
 
@@ -14,20 +15,23 @@ class PlayerAISystem final : public ecs::ISystem {
     std::shared_ptr<e::Time> _time;
     GameState& _gameState;
     Bounds& _worldBounds;
+    AiParams _aiParams;
 public:
     explicit PlayerAISystem(
         const std::shared_ptr<e::Time>& time,
         GameState& gameState,
-        Bounds& worldBounds
+        Bounds& worldBounds,
+        AiParams aiParams
     ) :
         _time(time),
         _gameState(gameState),
-        _worldBounds(worldBounds)
+        _worldBounds(worldBounds),
+        _aiParams(aiParams)
     {
     }
 
     void Update(ecs::World& world) override {
-        if (!_gameState.paused)
+        if (!_gameState.waitForRound)
             world.ForEachWith<Player, ecs::Transform, ecs::RigidBody>([&](
                 const Player& player, ecs::Transform& transform, ecs::RigidBody& rigidbody
             ){
@@ -43,7 +47,10 @@ private:
         if (_reactionTimer > 0.0f)
             return;
 
-        _reactionTimer = player.reactionTime;
+        _reactionTimer =
+                _aiParams.baseReactionTime
+                    + _aiParams.increaseReactionTimeByReflection * player.reflectionCombo
+                    - _aiParams.decreaseReactionTimeByScore * _gameState.bluePlayerScore;
 
         world.ForEachWith<Ball, ecs::RigidBody, ecs::Transform>([&](
             const Ball& ball, const ecs::RigidBody& ballRigidbody, const ecs::Transform& ballTransform
@@ -55,7 +62,7 @@ private:
             );
             const float diff = ballY - transform.position.y;
             const float targetSpeed = std::clamp(
-               diff * player.difficulty,
+               diff * _aiParams.difficulty,
                -player.speed,
                player.speed
             );

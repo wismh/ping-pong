@@ -19,6 +19,7 @@
 
 #include <boost/di/extension/injector.hpp>
 
+#include "../audio/audio_system.h"
 #include "event_bus.h"
 #include "input_system.h"
 
@@ -33,6 +34,10 @@ class Engine final {
     std::shared_ptr<render::ICanvas> _canvas;
     std::shared_ptr<Loop> _loop;
     std::shared_ptr<ui::UICanvas> _uiCanvas;
+    std::shared_ptr<AudioSystem> _audioSystem;
+    std::shared_ptr<AudioEventsManager> _audioEventsManager;
+
+    bool _initialized = false;
 public:
     ~Engine() {
         Dispose();
@@ -43,6 +48,8 @@ public:
             di::bind<ApplicationState>().in(di::singleton),
             di::bind<ui::UICanvas>.in(di::singleton),
             di::bind<InputSystem>.in(di::singleton),
+            di::bind<AudioSystem>.in(di::singleton),
+            di::bind<AudioEventsManager>.in(di::singleton),
             di::bind<EventBus>.in(di::singleton),
             di::bind<Time>.in(di::singleton),
             di::bind<AssetsDb>.in(di::singleton),
@@ -63,12 +70,16 @@ public:
         _canvas = injector.template create<std::shared_ptr<render::ICanvas>>();
         _loop = injector.template create<std::shared_ptr<Loop>>();
         _uiCanvas = injector.template create<std::shared_ptr<ui::UICanvas>>();
+        _audioSystem = injector.template create<std::shared_ptr<AudioSystem>>();
+        _audioEventsManager = injector.template create<std::shared_ptr<AudioEventsManager>>();
 
         const auto success =
             InitilizeSDL3() &&
             _windowSystem->Create("Ping Pong", {800, 600}) &&
             _canvas->Init() &&
-            _uiCanvas->Init();
+            _uiCanvas->Init() &&
+            _audioSystem->Init() &&
+            _audioEventsManager->Init();
 
         if (!success) {
             _logger->error("Failed to initialize engine");
@@ -76,6 +87,8 @@ public:
         }
 
         _logger->info("Initialized engine successfully");
+        _initialized = true;
+
         return true;
     }
 
@@ -86,13 +99,19 @@ public:
     }
 
     void Dispose() {
+        if (!_initialized)
+            return;
+
         _logger->debug("Disposing engine...");
 
+        _audioEventsManager->Dispose();
+        _audioSystem->Dispose();
         _canvas->Dispose();
         _windowSystem->Dispose();
         SDL_Quit();
 
         _logger->info("Disposed engine successfully");
+        _initialized = false;
     }
 private:
     bool InitilizeSDL3() {
