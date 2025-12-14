@@ -1,7 +1,7 @@
 #pragma once
-#include "../engine/core/event_bus.h"
-#include "../engine/ecs/ecs.h"
-#include "../engine/ecs/rigidbody.h"
+#include "engine/core/event_bus.h"
+#include "engine/ecs/ecs.h"
+#include "engine/ecs/rigidbody.h"
 
 #include "input_actions.h"
 #include "player.h"

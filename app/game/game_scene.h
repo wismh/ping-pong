@@ -2,6 +2,8 @@
 #include "engine/ecs/physcis_system.h"
 #include "engine/ecs/render_system.h"
 #include "engine/ecs/rigidbody.h"
+#include "engine/ecs/renderable.h"
+#include "engine/ecs/colliders.h"
 #include "engine/nodes/node_ui.h"
 #include "engine/ui/label.h"
 #include "engine/ui/layout.h"

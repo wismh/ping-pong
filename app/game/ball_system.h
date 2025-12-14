@@ -1,9 +1,10 @@
 #pragma once
-#include "../engine/ecs/physcis_system.h"
-#include "../engine/ecs/rigidbody.h"
-#include "../engine/ecs/transform.h"
-#include "ball.h"
+#include "engine/ecs/physcis_system.h"
+#include "engine/ecs/rigidbody.h"
+#include "engine/ecs/transform.h"
 #include "engine/audio/audio_events_manager.h"
+
+#include "ball.h"
 #include "game_state.h"
 #include "player.h"
 #include "utils.h"
