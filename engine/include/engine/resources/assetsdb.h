@@ -19,7 +19,7 @@ public:
 
     AssetsDb(
         const std::shared_ptr<Logger>& logger,
-        const std::shared_ptr<render::IGraphicFabric>& fabric,
+        const std::shared_ptr<render::IGraphicFactory>& fabric,
         const std::shared_ptr<ui::UICanvas>& canvas,
         const std::shared_ptr<AudioSystem>& audioSystem
     ) {

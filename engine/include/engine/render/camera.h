@@ -7,6 +7,8 @@
 
 namespace engine::render {
 
+class CameraCache;
+
 class Camera {
     friend class CameraCache;
 private:

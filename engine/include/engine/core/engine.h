@@ -1,10 +1,10 @@
 #pragma once
 #include "engine/render/command_buffer.h"
-#include "engine/render/igraphic_fabric.h"
+#include "engine/render/igraphic_factory.h"
 
 #include "engine/render/backends/opengl/opengl_canvas.h"
+#include "engine/render/backends/opengl/opengl_factory.h"
 #include "engine/render/backends/opengl/opengl_render.h"
-#include "engine/render/backends/opengl/opengl_fabric.h"
 
 #include "engine/resources/assetsdb.h"
 #include "engine/resources/mesh_pipe.h"
@@ -56,7 +56,7 @@ public:
             di::bind<WindowSystem>.in(di::singleton),
             di::bind<Loop>.in(di::singleton),
             di::bind<render::IRenderBackend>.to<render::OpenGLRenderBackend>().in(di::singleton),
-            di::bind<render::IGraphicFabric>.to<render::OpenGLFabric>().in(di::singleton),
+            di::bind<render::IGraphicFactory>.to<render::OpenGLFactory>().in(di::singleton),
             di::bind<render::ICanvas>.to<render::OpenGLCanvas>().in(di::singleton),
             di::bind<render::CommandBuffer>.in(di::singleton)
         );

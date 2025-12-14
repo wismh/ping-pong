@@ -1,4 +1,4 @@
-#include "engine/render/backends/opengl/opengl_fabric.h"
+#include "engine/render/backends/opengl/opengl_factory.h"
 
 #include "engine/render/backends/opengl/opengl_mesh.h"
 #include "engine/render/backends/opengl/opengl_shader.h"
@@ -6,7 +6,7 @@
 
 namespace engine::render {
 
-bool OpenGLFabric::TryCreateMesh(
+bool OpenGLFactory::TryCreateMesh(
    const MeshDesc& desc,
    std::shared_ptr<IMesh>& mesh,
    std::string& error
@@ -20,7 +20,7 @@ bool OpenGLFabric::TryCreateMesh(
     }
 }
 
-bool OpenGLFabric::TryCreateShader(
+bool OpenGLFactory::TryCreateShader(
     const ShaderDesc& desc,
     std::shared_ptr<IShader>& shader,
     std::string& error
@@ -34,7 +34,7 @@ bool OpenGLFabric::TryCreateShader(
     }
 }
 
-bool OpenGLFabric::TryCreateTexture(
+bool OpenGLFactory::TryCreateTexture(
     const TextureDesc &desc,
     std::shared_ptr<ITexture> &texture,
     std::string &error
