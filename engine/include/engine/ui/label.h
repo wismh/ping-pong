@@ -14,36 +14,8 @@ public:
     std::string fontName;
     float fontSize;
 
-    glm::vec2 GetSize(NVGcontext* vg) override {
-        nvgFontSize(vg, fontSize);
-        nvgFontFace(vg, fontName.c_str());
-
-        float bounds[4];
-        nvgTextBounds(
-           vg,
-           0, 0,
-           text.c_str(),
-           nullptr,
-           bounds
-       );
-
-        return {
-            bounds[2] - bounds[0],
-            bounds[3] - bounds[1]
-        };
-    }
-
-    void Draw(NVGcontext* vg, const glm::vec2 origin, glm::vec2 space) override {
-        if (!visible)
-            return;
-
-        float height = GetSize(vg).y;
-
-        nvgFontSize(vg, fontSize);
-        nvgFontFace(vg, fontName.c_str());
-        nvgFillColor(vg, nvgRGBA(color.r, color.g, color.b, color.a));
-        nvgText(vg, origin.x, origin.y + height, text.c_str(), nullptr);
-    }
+    glm::vec2 GetSize(NVGcontext* vg) override;
+    void Draw(NVGcontext* vg, const glm::vec2 origin, glm::vec2 space) override;
 };
-
+    
 }

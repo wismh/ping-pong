@@ -8,9 +8,9 @@
 
 namespace engine::render {
 
-class IGraphicFabric {
+class IGraphicFactory {
 public:
-    virtual ~IGraphicFabric() = default;
+    virtual ~IGraphicFactory() = default;
 
     virtual bool TryCreateTexture(const TextureDesc& desc, std::shared_ptr<ITexture>& texture, std::string& error) = 0;
     virtual bool TryCreateMesh(const MeshDesc& desc, std::shared_ptr<IMesh>& mesh, std::string& error) = 0;

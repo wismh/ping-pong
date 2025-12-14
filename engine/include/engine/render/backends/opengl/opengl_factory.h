@@ -1,9 +1,9 @@
 #pragma once
-#include "../../igraphic_fabric.h"
+#include "../../igraphic_factory.h"
 
 namespace engine::render {
 
-class OpenGLFabric final : public IGraphicFabric {
+class OpenGLFactory final : public IGraphicFactory {
 public:
     bool TryCreateMesh(
         const MeshDesc& desc,

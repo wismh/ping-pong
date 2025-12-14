@@ -7,7 +7,7 @@ namespace engine {
 
 TexturePipe::TexturePipe(
     const std::shared_ptr<Logger>& logger,
-    const std::shared_ptr<render::IGraphicFabric>& fabric
+    const std::shared_ptr<render::IGraphicFactory>& fabric
 ) :
     _logger(logger->Get()),
     _fabric(fabric) {
