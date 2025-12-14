@@ -40,6 +40,8 @@
    cd ./build/bin/Debug
    ./game.exe
     ```
+6. Керування
+   W/S або A/D
 
 ## Ключові моменти:
 - dependency injection підхід
