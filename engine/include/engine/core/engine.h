@@ -34,6 +34,7 @@ class Engine final {
     std::shared_ptr<ui::UICanvas> _uiCanvas;
     std::shared_ptr<AudioSystem> _audioSystem;
     std::shared_ptr<AudioEventsManager> _audioEventsManager;
+    std::shared_ptr<AssetsDb> _assetsDb;
 
     bool _initialized = false;
 public:
@@ -70,6 +71,7 @@ public:
         _uiCanvas = injector.template create<std::shared_ptr<ui::UICanvas>>();
         _audioSystem = injector.template create<std::shared_ptr<AudioSystem>>();
         _audioEventsManager = injector.template create<std::shared_ptr<AudioEventsManager>>();
+        _assetsDb = injector.template create<std::shared_ptr<AssetsDb>>();
 
         const auto success =
             InitilizeSDL3() &&
@@ -102,6 +104,7 @@ public:
 
         _logger->debug("Disposing engine...");
 
+        _assetsDb->Dispose();
         _audioEventsManager->Dispose();
         _audioSystem->Dispose();
         _canvas->Dispose();

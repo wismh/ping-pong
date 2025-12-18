@@ -19,6 +19,15 @@ public:
         });
     }
 
+//    template <typename Event>
+//    void Unsubscribe(const Handler<Event>& handler) {
+//        auto& vec = _handlers[typeid(Event)];
+//        vec.push_back([handler](const void* e) {
+//            handler(*static_cast<const Event*>(e));
+//        });
+//    }
+
+
     template <typename Event, typename... Args>
     void Emit(Args&&... args) {
         Event event{ std::forward<Args>(args)... };

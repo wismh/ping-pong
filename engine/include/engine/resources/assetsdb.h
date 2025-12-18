@@ -30,6 +30,12 @@ public:
         RegisterPipe<Audio, AudioPipe>(logger, audioSystem);
     }
 
+    void Dispose() {
+        for (auto& pipe : _pipes)
+            pipe.second->UnloadAll();
+    }
+
+
     static std::string GetAssetPath(const char* localPath) {
         return std::string(ASSETS_PATH) + "/" + localPath;
     }

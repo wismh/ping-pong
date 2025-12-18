@@ -1,17 +1,17 @@
 #pragma once
 
-#include <../../../external/SDL3/include/SDL3/SDL.h>
-#include <../../../external/boost_di/include/boost/di.hpp>
-#include <../../../external/glad/include/glad/glad.h>
-#include <../../../external/glm/glm/mat4x4.hpp>
-#include <../../../external/glm/glm/vec2.hpp>
-#include <../../../external/spdlog/include/spdlog/logger.h>
+#include <SDL3/SDL.h>
+#include <boost/di.hpp>
+#include <glad/glad.h>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <spdlog/logger.h>
 #include <iostream>
 #include <string>
 #include <variant>
 
-#include "../../../external/spdlog/include/spdlog/sinks/basic_file_sink.h"
-#include "../../../external/spdlog/include/spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace di = boost::di;
 
@@ -33,7 +33,7 @@ public:
         _logger->flush_on(spdlog::level::info);
     }
 
-    std::shared_ptr<spdlog::logger> Get() {
+    const std::shared_ptr<spdlog::logger>& Get() {
         return _logger;
     }
 };
